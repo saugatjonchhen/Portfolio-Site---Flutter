@@ -1,0 +1,20 @@
+# netlify.toml
+
+# Base configuration for the site
+[build]
+command = "flutter build web --release"
+publish = "build/web"
+
+# Essential configuration for single-page apps (SPA) like Flutter
+# This ensures that /blogs/1 loads correctly, not just /index.html
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# Install Flutter SDK using the build plugin
+[[plugins]]
+package = "netlify-plugin-flutter"
+# Optional: specify a channel (stable is default) and version
+[plugins.inputs]
+channel = "stable"
