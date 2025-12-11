@@ -1,4 +1,4 @@
-# 🧑‍💻 [Your Name/Alias] - Personal Portfolio Website
+# 🧑‍💻 [Saugat Jonchhen/saugat.john09] - Personal Portfolio Website
 
 ### Modern, Component-Driven, and Responsive Web Presence
 
@@ -38,4 +38,18 @@ The entire front-end of this personal website is built using **Flutter**. This c
 ## 📂 Folder Structure
 
 The project employs a clear feature-based folder structure to maintain separation of concerns:
-lib/ ├── core/ # Theme, constants, and global utilities (responsive logic) ├── data/ # Data models and mock content (e.g., ProjectsContent) ├── presentation/ # UI layer (Pages and Widgets) │ ├── blogs/ # BlogListPage, BlogDetailPage │ ├── portfolio/ # PortfolioPage │ ├── resume/ # ResumePage, SkillsGrid, Timelines │ └── widgets/ # Reusable, non-screen-specific components (NavBar, Footer) └── main.dart # Application entry point and router configuration
+
+```text
+lib/
+├── core/
+│   ├── utils/          # Responsive logic and constants
+│   └── theme/          # App theme data (dark/light)
+├── data/
+│   ├── content/        # Mock data (ProjectsContent, BlogsContent)
+│   └── models/         # Data models (Project, Blog, etc.)
+├── presentation/       # UI Layer: All screens and feature-specific widgets
+│   ├── blogs/          # BlogListPage, BlogDetailPage
+│   ├── portfolio/      # PortfolioPage, ProjectGrid
+│   ├── resume/         # ResumePage, Timeline, SkillsGrid
+│   └── widgets/        # Reusable global components (NavBar, Footer)
+└── main.dart           # Application entry point and router configuration
