@@ -1,4 +1,4 @@
-# 🧑‍💻 [Saugat Jonchhen/saugat.john09] - Personal Portfolio Website
+# 🧑‍💻 Saugat Jonchhen/saugat.john09 - Personal Portfolio Website
 
 ### Modern, Component-Driven, and Responsive Web Presence
 
@@ -51,5 +51,5 @@ lib/
 │   ├── blogs/          # BlogListPage, BlogDetailPage
 │   ├── portfolio/      # PortfolioPage, ProjectGrid
 │   ├── resume/         # ResumePage, Timeline, SkillsGrid
-│   └── widgets/        # Reusable global components (NavBar, Footer)
+│   └── components/        # Reusable global components (NavBar, Footer)
 └── main.dart           # Application entry point and router configuration
