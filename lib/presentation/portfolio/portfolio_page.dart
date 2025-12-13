@@ -1,110 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/utils/responsive.dart';
-import '../../data/content/project_content.dart';
 import '../../data/models/project.dart';
+import '../../providers/portfolio_provider.dart';
 import '../components/app_bar_widget.dart';
 import '../components/footer.dart';
-import '../home_page.dart';
 
-class PortfolioPage extends StatefulWidget {
+class PortfolioPage extends ConsumerStatefulWidget {
   const PortfolioPage({super.key});
 
   @override
-  State<PortfolioPage> createState() => _PortfolioPageState();
+  ConsumerState<PortfolioPage> createState() => _PortfolioPageState();
 }
 
-class _PortfolioPageState extends State<PortfolioPage> {
+class _PortfolioPageState extends ConsumerState<PortfolioPage> {
   // State for filtering
   String _selectedCategory = 'All';
 
   // Get unique categories from project list + 'All'
-  List<String> get _categories {
-    final allTags = ProjectsContent.projects.expand((p) => p.tags).toSet();
+  List<String> _categoriesFrom(List<Project> projects) {
+    final allTags = projects.expand((p) => p.tags).toSet();
     return ['All', ...allTags.toList()..sort()];
   }
 
-  // Filter projects based on selection
-  List<Project> get _filteredProjects {
-    if (_selectedCategory == 'All') return ProjectsContent.projects;
-    return ProjectsContent.projects
-        .where((p) => p.tags.contains(_selectedCategory))
-        .toList();
+  List<Project> _filteredProjectsFrom(List<Project> projects) {
+    if (_selectedCategory == 'All') return projects;
+    return projects.where((p) => p.tags.contains(_selectedCategory)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final portfolioAsync = ref.watch(portfolioProvider);
     double horizontalPadding =
         ResponsiveLayout.isSmallScreen(context) ? 24 : 80;
 
     return Scaffold(
       appBar: const AppNavBar(),
       endDrawer: const AppDrawer(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 60),
+      body: portfolioAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Failed to load projects: $e')),
+        data: (portfolio) {
+          final projects = portfolio.projects;
+          final categories = _categoriesFrom(projects);
+          final filteredProjects = _filteredProjectsFrom(projects);
 
-            // --- HEADER ---
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Creative Typography
-                  Text(
-                    'Featured Projects',
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayLarge!
-                        .copyWith(fontSize: 48),
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 60),
+
+                // --- HEADER ---
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Featured Projects',
+                        style: Theme.of(context)
+                            .textTheme
+                            .displayLarge!
+                            .copyWith(fontSize: 48),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'A collection of applications and tools I\'ve built.',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'A collection of applications and tools I\'ve built.',
-                    style: Theme.of(context).textTheme.titleLarge,
+                ),
+
+                const SizedBox(height: 40),
+
+                // --- FILTER TABS ---
+                SizedBox(
+                  height: 50,
+                  child: ListView.separated(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: horizontalPadding),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      return _FilterTab(
+                        label: category,
+                        isSelected: category == _selectedCategory,
+                        onTap: () => setState(() {
+                          _selectedCategory = category;
+                        }),
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // --- PROJECT GRID ---
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: _ProjectGrid(projects: filteredProjects),
+                ),
+
+                const SizedBox(height: 100),
+                const Footer(),
+                const SizedBox(height: 20),
+              ],
             ),
-
-            const SizedBox(height: 40),
-
-            // --- FILTER TABS (Scrollable) ---
-            SizedBox(
-              height: 50,
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                scrollDirection: Axis.horizontal,
-                itemCount: _categories.length,
-                separatorBuilder: (c, i) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final category = _categories[index];
-                  final isSelected = category == _selectedCategory;
-                  return _FilterTab(
-                    label: category,
-                    isSelected: isSelected,
-                    onTap: () => setState(() => _selectedCategory = category),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            // --- PROJECT GRID (Responsive Wrap) ---
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: _ProjectGrid(projects: _filteredProjects),
-            ),
-
-            const SizedBox(height: 100),
-            const Footer(),
-            const SizedBox(height: 20),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -213,8 +223,12 @@ class _ProjectCardState extends State<_ProjectCard> {
                     // Fallback icon if no image
                     child: project.imageUrl == null
                         ? Center(
-                            child: Icon(Icons.code,
-                                size: 50, color: theme.colorScheme.primary))
+                            child: Icon(
+                              Icons.code,
+                              size: 50,
+                              color: theme.colorScheme.primary,
+                            ),
+                          )
                         : null,
                   ),
 
@@ -225,16 +239,17 @@ class _ProjectCardState extends State<_ProjectCard> {
                       right: 12,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: theme.colorScheme.background,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: Colors.white24),
                         ),
                         child: Text(
                           project.client!,
                           style: theme.textTheme.labelSmall!.copyWith(
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -322,12 +337,24 @@ class _ProjectCardState extends State<_ProjectCard> {
                         if (project.demoUrl != null)
                           TextButton.icon(
                             onPressed: () {
-                              // launchUrl(Uri.parse(project.demoUrl!));
+                              launchUrl(Uri.parse(project.demoUrl!));
                             },
                             icon: const FaIcon(
-                                FontAwesomeIcons.arrowUpRightFromSquare,
-                                size: 16),
+                              FontAwesomeIcons.arrowUpRightFromSquare,
+                              size: 16,
+                            ),
                             label: const Text('Live Demo'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: theme.colorScheme.primary,
+                            ),
+                          )
+                        else
+                          TextButton.icon(
+                            onPressed: () {
+                              // launchUrl(Uri.parse(project.demoUrl!));
+                            },
+                            icon: null,
+                            label: const Text(''),
                             style: TextButton.styleFrom(
                               foregroundColor: theme.colorScheme.primary,
                             ),

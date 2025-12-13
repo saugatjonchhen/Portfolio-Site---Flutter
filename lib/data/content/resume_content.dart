@@ -51,13 +51,12 @@ class ResumeContent {
   static const Map<String, List<String>> skills = {
     // 1. Languages
     'Languages': [
-      'CSS',
       'Dart',
-      'HTML',
-      'JavaScript',
       'Kotlin',
-      'Python',
-      'Swift'
+      'Java',
+      'Php',
+      'Javascript',
+      'C#'
     ],
     // 2. Frameworks & Libraries
     'Frameworks & Libraries': [

@@ -1,86 +1,97 @@
 // lib/presentation/resume/resume_page.dart (FINALIZED CODE)
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../core/utils/responsive.dart';
 import '../../data/content/resume_content.dart';
+import '../../data/models/education.dart';
+import '../../data/models/experience.dart';
+import '../../providers/portfolio_provider.dart';
 import '../components/app_bar_widget.dart';
 import '../components/footer.dart';
 import '../components/skills_grid.dart';
 import '../components/timeline_card.dart';
-import '../home_page.dart';
 
-class ResumePage extends StatelessWidget {
+class ResumePage extends ConsumerWidget {
   const ResumePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final portfolioAsync = ref.watch(portfolioProvider);
+
     double horizontalPadding =
         ResponsiveLayout.isSmallScreen(context) ? 24 : 100;
     final isSmall = ResponsiveLayout.isSmallScreen(context);
 
     return Scaffold(
-      appBar: const AppNavBar(),
-      endDrawer: const AppDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 60),
+        appBar: const AppNavBar(),
+        endDrawer: const AppDrawer(),
+        body: portfolioAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) =>
+              Center(child: Text('Failed to load resume data: $e')),
+          data: (portfolio) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 60),
 
-              // --- HEADER & DOWNLOAD BUTTON (Responsive) ---
-              isSmall
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Responsive Title Size
-                        Text(
-                          'My Professional Resume',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayLarge!
-                              .copyWith(fontSize: 32),
-                        ),
-                        const SizedBox(height: 20),
-                        // Download button takes full width on mobile
-                        SizedBox(
-                          width: double.infinity,
-                          child: _DownloadButton(),
-                        ),
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // Desktop Title Size
-                        Text(
-                          'My Professional Resume',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayLarge!
-                              .copyWith(fontSize: 48),
-                        ),
-                        _DownloadButton(),
-                      ],
+                    // --- HEADER & DOWNLOAD BUTTON ---
+                    isSmall
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'My Professional Resume',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge!
+                                    .copyWith(fontSize: 32),
+                              ),
+                              const SizedBox(height: 20),
+                              SizedBox(
+                                width: double.infinity,
+                                child: _DownloadButton(),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'My Professional Resume',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge!
+                                    .copyWith(fontSize: 48),
+                              ),
+                              _DownloadButton(),
+                            ],
+                          ),
+
+                    const SizedBox(height: 60),
+
+                    // 👇 PASS DATA HERE
+                    ResumeContentLayout(
+                      education: portfolio.education,
+                      experience: portfolio.experience,
                     ),
-              const SizedBox(height: 60),
 
-              // --- THE NEW RESPONSIVE LAYOUT CONTAINER ---
-              const ResumeContentLayout(),
-              const SizedBox(height: 80),
-
-              // --- FOOTER ---
-              const Footer(),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-    );
+                    const SizedBox(height: 80),
+                    const Footer(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            );
+          },
+        ));
   }
 }
 
@@ -112,7 +123,14 @@ class _DownloadButton extends StatelessWidget {
 // --- WIDGET: RESPONSIBLE FOR THE TWO-COLUMN OR SINGLE-COLUMN LAYOUT ---
 // ------------------------------------------------------------------
 class ResumeContentLayout extends StatelessWidget {
-  const ResumeContentLayout({super.key});
+  const ResumeContentLayout({
+    super.key,
+    required this.education,
+    required this.experience,
+  });
+
+  final List<Education> education;
+  final List<Experience> experience;
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +150,18 @@ class ResumeContentLayout extends StatelessWidget {
                 Text('Professional Experience',
                     style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 30),
-                const ExperienceTimeline(),
+                ExperienceTimeline(
+                  items: experience,
+                ),
                 const SizedBox(height: 80), // Separator
 
                 // 2. Education (Now Full-Width Timeline)
                 Text('Education',
                     style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 30),
-                const EducationTimeline(),
+                EducationTimeline(
+                  items: education,
+                ),
               ],
             ),
           ),
@@ -176,30 +198,52 @@ class ResumeContentLayout extends StatelessWidget {
       );
     } else {
       // --- SINGLE-COLUMN LAYOUT (Mobile/Tablet) ---
-      return const Column(
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Using Text styles that are defined outside the theme,
           // which is acceptable for a simple mobile view
-          Text('Professional Experience',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
-          SizedBox(height: 30),
-          ExperienceTimeline(),
-          SizedBox(height: 80),
-          Text('Education',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
-          SizedBox(height: 30),
-          EducationTimeline(),
-          SizedBox(height: 80),
-          Text('Technical Skills',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
-          SizedBox(height: 30),
-          SkillsGrid(), // <-- Full-width rendering
-          SizedBox(height: 80),
-          Text('Certifications',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
-          SizedBox(height: 30),
-          CertificationsList(),
+          const Text(
+            'Professional Experience',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 28,
+            ),
+          ),
+          const SizedBox(height: 30),
+          ExperienceTimeline(
+            items: experience,
+          ),
+          const SizedBox(height: 80),
+          const Text(
+            'Education',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 28,
+            ),
+          ),
+          const SizedBox(height: 30),
+          EducationTimeline(items: education),
+          const SizedBox(height: 80),
+          const Text(
+            'Technical Skills',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 28,
+            ),
+          ),
+          const SizedBox(height: 30),
+          const SkillsGrid(), // <-- Full-width rendering
+          const SizedBox(height: 80),
+          const Text(
+            'Certifications',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 28,
+            ),
+          ),
+          const SizedBox(height: 30),
+          const CertificationsList(),
         ],
       );
     }
@@ -210,14 +254,12 @@ class ResumeContentLayout extends StatelessWidget {
 // --- Education DEDICATED EXPERIENCE TIMELINE WIDGET ---
 // ------------------------------------------------------------------
 class EducationTimeline extends StatelessWidget {
-  const EducationTimeline({super.key});
+  const EducationTimeline({super.key, required this.items});
+
+  final List<Education> items;
 
   @override
   Widget build(BuildContext context) {
-    final items = ResumeContent.education;
-    // Assuming ResumeContent.education is a List
-    // items.sort((a, b) => b.years.compareTo(a.years)); // This line may require an actual data model instance
-
     return Column(
       children: items.map((item) {
         bool isLast = item == items.last;
@@ -248,13 +290,12 @@ class EducationTimeline extends StatelessWidget {
 // --- Experience DEDICATED EXPERIENCE TIMELINE WIDGET ---
 // ------------------------------------------------------------------
 class ExperienceTimeline extends StatelessWidget {
-  const ExperienceTimeline({super.key});
+  const ExperienceTimeline({super.key, required this.items});
+
+  final List<Experience> items;
 
   @override
   Widget build(BuildContext context) {
-    final items = ResumeContent.experiences;
-    // items.sort((a, b) => b.duration.compareTo(a.duration)); // This line may require an actual data model instance
-
     return Column(
       children: items.map((item) {
         bool isLast = item == items.last;
@@ -288,7 +329,9 @@ class ExperienceTimeline extends StatelessWidget {
 // --- CertificationsList (Extracted) ---
 // ------------------------------------------------------------------
 class CertificationsList extends StatelessWidget {
-  const CertificationsList({super.key});
+  const CertificationsList({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

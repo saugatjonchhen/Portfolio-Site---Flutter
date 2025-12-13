@@ -1,0 +1,62 @@
+[
+  {
+    "id": "educonnect",
+    "title": "Educonnect",
+    "description": "Education consultancy platform developed using Flutter.",
+    "tags": ["Flutter", "Android", "iOS", "Agile"],
+    "imageUrl": null,
+    "demoUrl": "https://www.educonnect.com.au",
+    "sourceUrl": null,
+    "client": "Educonnect Consultancy"
+  },
+  {
+    "id": "aiden-sap",
+    "title": "Aiden (SAP)",
+    "description": "Web-based POS system integrated with SAP.",
+    "tags": ["Flutter Web", "SAP", "POS"],
+    "imageUrl": null,
+    "demoUrl": null,
+    "sourceUrl": null,
+    "client": "Proshore Nepal Pvt. Ltd."
+  },
+  {
+    "id": "datingscript",
+    "title": "DatingScript",
+    "description": "Dating application published on Google Play Store.",
+    "tags": ["Flutter", "Android"],
+    "imageUrl": null,
+    "demoUrl": "https://play.google.com/store/apps/details?id=com.datingscript",
+    "sourceUrl": null,
+    "client": "Proshore Nepal Pvt. Ltd."
+  },
+  {
+    "id": "jageer",
+    "title": "Jageer",
+    "description": "Job portal mobile application.",
+    "tags": ["Flutter", "Android"],
+    "imageUrl": null,
+    "demoUrl": "https://play.google.com/store/apps/details?id=com.nectardigit.jageer",
+    "sourceUrl": null,
+    "client": "Nectar Digit Pvt. Ltd."
+  },
+  {
+    "id": "filili-connect",
+    "title": "Filili Connect",
+    "description": "Marketplace and service connection platform.",
+    "tags": ["Android", "Maps", "Payments"],
+    "imageUrl": null,
+    "demoUrl": "https://play.google.com/store/apps/details?id=com.fililiconnect.app",
+    "sourceUrl": null,
+    "client": "Infycel Technology Pvt. Ltd."
+  },
+  {
+    "id": "bazar-exchange",
+    "title": "Bazar Exchange",
+    "description": "E-commerce exchange platform.",
+    "tags": ["Android", "E-commerce"],
+    "imageUrl": null,
+    "demoUrl": "https://play.google.com/store/apps/details?id=com.infycel.bazarexchange",
+    "sourceUrl": null,
+    "client": "Infycel Technology Pvt. Ltd."
+  }
+]

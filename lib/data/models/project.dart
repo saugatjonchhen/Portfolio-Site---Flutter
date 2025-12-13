@@ -18,4 +18,17 @@ class Project {
     this.sourceUrl,
     this.client,
   });
+
+  factory Project.fromJson(Map<String, dynamic> json) {
+    return Project(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      tags: List<String>.from(json['tags']),
+      imageUrl: json['imageUrl'],
+      demoUrl: json['demoUrl'],
+      sourceUrl: json['sourceUrl'],
+      client: json['client'],
+    );
+  }
 }

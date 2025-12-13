@@ -1,0 +1,74 @@
+{
+  "Mobile Development": [
+    "Android Application Development",
+    "Flutter (Android & iOS)",
+    ".net MAUI (Learning)"
+  ],
+  "Programming Languages": [
+    "Java",
+    "Kotlin",
+    "PHP",
+    "Dart"
+  ],
+  "Frameworks & Libraries": [
+    "Flutter",
+    "Android SDK",
+    "Laravel"
+  ],
+  "Version Control": [
+    "Git",
+    "Git Bash",
+    "SourceTree"
+  ],
+  "State Management (Flutter)": [
+    "Provider",
+    "Riverpod",
+    "BLoC",
+    "BLoC / Cubit"
+  ],
+  "APIs & Networking": [
+    "REST API",
+    "JSON"
+  ],
+  "Databases & Storage": [
+    "Dio",
+    "Http",
+    "Websockets",
+    "Local Storage",
+    "Firebase (Firestore/Auth/Cloud Functions)",
+    "Hive (Flutter)",
+    "Shared Preferences"
+  ],
+  "Tools": [
+    "Android Studio",
+    "Postman",
+    "MS Office",
+    "Github",
+    "Visual Studio Code",
+    "Xcode",
+    "Windsurf"
+  ],
+  "Architecture & Practices": [
+    "MVVM",
+    "Clean Architecture",
+    "Agile (SCRUM)",
+    "Code Refactoring",
+    "Reusable Components"
+  ],
+  "Testing": [
+    "API Testing",
+    "Integration Tests",
+    "Unit Tests",
+    "Widget Tests"
+  ],
+  "Payments & Services": [
+    "eSewa",
+    "Khalti",
+    "Google Maps & Directions API",
+    "Authentication",
+    "Google Map",
+    "Firebase Cloud Messaging",
+    "OneSignal Notifications",
+    "Google Ads"
+  ]
+}

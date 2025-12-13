@@ -1,0 +1,26 @@
+[
+  {
+    "degree": "MBA, Business Administration",
+    "institution": "Phoenix College of Management, Lincoln University",
+    "years": "2019 - 2022",
+    "description": "Graduate studies in business administration with focus on management and organizational skills."
+  },
+  {
+    "degree": "BSc. CSIT, Information Technology",
+    "institution": "Aberdeen International College, Tribhuvan University",
+    "years": "2013 - 2018",
+    "description": "Undergraduate program focused on software development, computing fundamentals, and IT systems."
+  },
+  {
+    "degree": "Higher Secondary (10+2 in Science)",
+    "institution": "Premier International College",
+    "years": "2011 - 2012",
+    "description": null
+  },
+  {
+    "degree": "SLC - School Level Certificate",
+    "institution": "Galaxy Public School",
+    "years": "2003 - 2010",
+    "description": null
+  }
+]

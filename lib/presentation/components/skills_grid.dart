@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_portfolio/providers/portfolio_provider.dart';
 
 import '../../core/utils/responsive.dart';
-import '../../data/content/resume_content.dart'; // Corrected path to resume_content
 
 // --- NEW Aesthetic Color Palette (Consistent with Home Page) ---
 const _kAestheticColors = [
@@ -12,65 +13,67 @@ const _kAestheticColors = [
   Color(0xFF0EA5E9), // Blue (Sky Blue)
 ];
 
-class SkillsGrid extends StatelessWidget {
+class SkillsGrid extends ConsumerWidget {
   final bool isSidebar;
 
   const SkillsGrid({super.key, this.isSidebar = false});
 
   @override
-  Widget build(BuildContext context) {
-    final skillCategories = ResumeContent.skills.keys.toList();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final portfolioAsync = ref.watch(portfolioProvider);
 
-    // 1. Determine the number of columns based on responsive rules
-    int crossAxisCount = isSidebar
-        ? 1
-        : (ResponsiveLayout.isLargeScreen(context)
-        ? 4
-        : (ResponsiveLayout.isSmallScreen(context) ? 1 : 2));
+    return portfolioAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Text('Failed to load skills: $e'),
+      data: (portfolio) {
+        final skillCategories = portfolio.skills.keys.toList();
 
-    // 2. Create the list of SkillCard widgets
-    List<Widget> skillCards = skillCategories.asMap().entries.map((entry) {
-      int index = entry.key;
-      String category = entry.value;
-      List<String> skillList = ResumeContent.skills.values.elementAt(index);
-      final cardAccentColor = _kAestheticColors[index % _kAestheticColors.length];
+        int crossAxisCount = isSidebar
+            ? 1
+            : (ResponsiveLayout.isLargeScreen(context)
+                ? 4
+                : (ResponsiveLayout.isSmallScreen(context) ? 1 : 2));
 
-      return SkillCard(
-        category: category,
-        skills: skillList,
-        accentColor: cardAccentColor,
-        isSidebar: isSidebar, // Pass flag to card for padding
-      );
-    }).toList();
+        final skillCards = skillCategories.asMap().entries.map((entry) {
+          final index = entry.key;
+          final category = entry.value;
+          final skillList = portfolio.skills[category]!;
 
-    // --- Single Column Layout (Mobile & Sidebar) ---
-    // Use Column/ListView which naturally allows content-driven height.
-    if (crossAxisCount == 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: skillCards,
-      );
-    }
+          final accentColor =
+              _kAestheticColors[index % _kAestheticColors.length];
 
-    // --- Multi-Column Layout (Desktop Grid) ---
-    // Use LayoutBuilder and Wrap to simulate a variable-height grid.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const double spacing = 32.0;
-        double totalSpacing = (crossAxisCount - 1) * spacing;
-        // Calculate the exact width each card should occupy
-        double cardWidth = (constraints.maxWidth - totalSpacing) / crossAxisCount;
+          return SkillCard(
+            category: category,
+            skills: skillList,
+            accentColor: accentColor,
+            isSidebar: isSidebar,
+          );
+        }).toList();
 
-        return Wrap(
-          spacing: spacing, // Horizontal spacing
-          runSpacing: spacing, // Vertical spacing
-          children: skillCards.map((card) {
-            return SizedBox(
-              width: cardWidth,
-              // The height is intentionally left out, allowing the card's content to define it
-              child: card,
+        // --- Single Column Layout ---
+        if (crossAxisCount == 1) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: skillCards,
+          );
+        }
+
+        // --- Multi-Column Layout ---
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            const spacing = 32.0;
+            final totalSpacing = (crossAxisCount - 1) * spacing;
+            final cardWidth =
+                (constraints.maxWidth - totalSpacing) / crossAxisCount;
+
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: skillCards.map((card) {
+                return SizedBox(width: cardWidth, child: card);
+              }).toList(),
             );
-          }).toList(),
+          },
         );
       },
     );
@@ -117,15 +120,14 @@ class SkillCard extends StatelessWidget {
               ),
             ),
             const Divider(height: 25, thickness: 1.5, color: Color(0xFF424242)),
-
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
               children: skills
                   .map((skill) => _SkillChip(
-                skill: skill,
-                chipColor: accentColor,
-              ))
+                        skill: skill,
+                        chipColor: accentColor,
+                      ))
                   .toList(),
             ),
           ],
@@ -141,19 +143,51 @@ class _SkillChip extends StatelessWidget {
 
   const _SkillChip({required this.skill, required this.chipColor});
 
-  // A simple way to get a relevant-looking icon based on the skill name
   IconData _getIconForSkill(String skill) {
-    final lowerSkill = skill.toLowerCase();
-    if (lowerSkill.contains('flutter') || lowerSkill.contains('dart'))
-      return FontAwesomeIcons.bolt;
-    if (lowerSkill.contains('firebase') || lowerSkill.contains('cloud'))
-      return FontAwesomeIcons.cloud;
-    if (lowerSkill.contains('js') ||
-        lowerSkill.contains('html') ||
-        lowerSkill.contains('css')) return FontAwesomeIcons.code;
-    if (lowerSkill.contains('testing')) return FontAwesomeIcons.vial;
-    if (lowerSkill.contains('figma')) return FontAwesomeIcons.figma;
-    if (lowerSkill.contains('python')) return FontAwesomeIcons.python;
+    final s = skill.toLowerCase();
+
+    // --- Mobile / Frameworks ---
+    if (s.contains('flutter')) return FontAwesomeIcons.bolt;
+    if (s.contains('android')) return FontAwesomeIcons.android;
+
+    // --- Programming Languages ---
+    if (s == 'dart') return FontAwesomeIcons.code;
+    if (s == 'java') return FontAwesomeIcons.java;
+    if (s == 'kotlin') return FontAwesomeIcons.code;
+    if (s == 'php') return FontAwesomeIcons.php;
+
+    // --- Backend / APIs ---
+    if (s.contains('laravel')) return FontAwesomeIcons.server;
+    if (s.contains('rest')) return FontAwesomeIcons.networkWired;
+    if (s.contains('json')) return FontAwesomeIcons.code;
+
+    // --- Version Control ---
+    if (s.contains('git')) return FontAwesomeIcons.gitAlt;
+    if (s.contains('sourcetree')) return FontAwesomeIcons.codeBranch;
+
+    // --- Tools ---
+    if (s.contains('android studio')) return FontAwesomeIcons.mobileScreen;
+    if (s.contains('postman')) return FontAwesomeIcons.paperPlane;
+    if (s.contains('excel')) return FontAwesomeIcons.fileExcel;
+    if (s.contains('word')) return FontAwesomeIcons.fileWord;
+    if (s.contains('powerpoint')) return FontAwesomeIcons.filePowerpoint;
+
+    // --- Architecture / Practices ---
+    if (s.contains('mvvm')) return FontAwesomeIcons.layerGroup;
+    if (s.contains('scrum') || s.contains('agile')) {
+      return FontAwesomeIcons.peopleGroup;
+    }
+
+    // --- Payments / Services ---
+    if (s.contains('esewa') || s.contains('khalti')) {
+      return FontAwesomeIcons.creditCard;
+    }
+    if (s.contains('google maps')) return FontAwesomeIcons.mapLocationDot;
+
+    // --- Testing ---
+    if (s.contains('testing')) return FontAwesomeIcons.vial;
+
+    // --- Default fallback ---
     return FontAwesomeIcons.microchip;
   }
 

@@ -1,0 +1,100 @@
+[
+  {
+    "title": "Senior Flutter Developer",
+    "company": "Bits Kraft",
+    "duration": "November 2024 – Present",
+    "description": "Developing and maintaining Flutter applications for Android and iOS platforms.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Designed and implemented new app modules based on product requirements",
+      "Improved application performance through bug fixing and optimization"
+    ]
+  },
+  {
+    "title": "Senior Flutter Developer",
+    "company": "Educonnect Consultancy & Software Development Company Pvt. Ltd.",
+    "duration": "November 2022 – November 2024",
+    "description": "Worked on large-scale Flutter applications following Agile SCRUM methodology.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Developed cross-platform Flutter applications for Android and iOS",
+      "Refactored legacy code and created reusable components",
+      "Collaborated in Agile SCRUM teams",
+      "Maintained documentation and improved performance"
+    ]
+  },
+  {
+    "title": "Senior Mobile Developer",
+    "company": "Proshore Nepal Pvt. Ltd.",
+    "duration": "January 2021 – November 2022",
+    "description": "Worked on Flutter web and mobile applications with strong testing practices.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Built Flutter applications for Web, Android, and iOS",
+      "Implemented unit, widget, and integration tests",
+      "Handled legacy Android projects",
+      "Actively participated in Flutter community sessions"
+    ]
+  },
+  {
+    "title": "Senior Android Developer",
+    "company": "Nectar Digit Pvt. Ltd.",
+    "duration": "June 2021 – December 2021",
+    "description": "Developed Android and Flutter applications with payment gateway integrations.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Integrated eSewa and Khalti payment gateways",
+      "Worked on Java, Kotlin, and Flutter-based applications",
+      "Participated in architecture discussions and code reviews"
+    ]
+  },
+  {
+    "title": "Senior Android Developer / Project Manager",
+    "company": "Infycel Technology Pvt. Ltd.",
+    "duration": "March 2020 – Present",
+    "description": "Led projects and managed teams while actively developing Android applications.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Led project teams and coordinated deliverables",
+      "Integrated Google Maps and payment gateways",
+      "Delivered multiple Play Store applications",
+      "Improved development efficiency through technology adoption"
+    ]
+  },
+  {
+    "title": "Senior Android Developer",
+    "company": "Applyjob Pvt. Ltd.",
+    "duration": "September 2019 – February 2020",
+    "description": "Worked on publishing and maintaining Android applications.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Published apps to Google Play Store",
+      "Improved app performance and stability",
+      "Integrated third-party libraries"
+    ]
+  },
+  {
+    "title": "Senior Android Developer",
+    "company": "Omlot Express Pvt. Ltd.",
+    "duration": "May 2019 – September 2019",
+    "description": "Developed Android apps using MVVM and Jetpack components.",
+    "seniorityLevel": "Senior",
+    "achievements": [
+      "Worked with MVVM architecture and Jetpack components",
+      "Developed APIs using PHP (Laravel)",
+      "Published multiple Play Store applications"
+    ]
+  },
+  {
+    "title": "Junior Android Developer",
+    "company": "Source Taggers Pvt. Ltd.",
+    "duration": "October 2017 – April 2019",
+    "description": "Built Android applications and backend APIs.",
+    "seniorityLevel": "Junior",
+    "achievements": [
+      "Developed advanced Android applications",
+      "Worked with REST APIs and third-party libraries",
+      "Built backend APIs using PHP (Laravel)"
+    ]
+  }
+]
