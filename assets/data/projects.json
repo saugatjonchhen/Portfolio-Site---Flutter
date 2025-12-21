@@ -3,8 +3,13 @@
     "id": "educonnect",
     "title": "Educonnect",
     "description": "Education consultancy platform developed using Flutter.",
-    "tags": ["Flutter", "Android", "iOS", "Agile"],
-    "imageUrl": null,
+    "tags": [
+      "Flutter",
+      "Android",
+      "iOS",
+      "Agile"
+    ],
+    "imageUrl": "https://www.educonnect.com.au/Content/V2/images/brand/educonnect_brand_logo_full.svg",
     "demoUrl": "https://www.educonnect.com.au",
     "sourceUrl": null,
     "client": "Educonnect Consultancy"
@@ -13,8 +18,13 @@
     "id": "aiden-sap",
     "title": "Aiden (SAP)",
     "description": "Web-based POS system integrated with SAP.",
-    "tags": ["Flutter Web", "SAP", "POS"],
-    "imageUrl": null,
+    "tags": [
+      "Flutter Web",
+      "SAP",
+      "POS",
+      "Website"
+    ],
+    "imageUrl": "https://docs.aiden.eu/__assets-f4abaee6-0fdb-4979-b0ff-d2a3dea10811/image/Aiden%20Logo%20Without%20Strapline.png",
     "demoUrl": null,
     "sourceUrl": null,
     "client": "Proshore Nepal Pvt. Ltd."
@@ -23,8 +33,12 @@
     "id": "datingscript",
     "title": "DatingScript",
     "description": "Dating application published on Google Play Store.",
-    "tags": ["Flutter", "Android"],
-    "imageUrl": null,
+    "tags": [
+      "Flutter",
+      "Android",
+      "Flutter PWA"
+    ],
+    "imageUrl": "https://www.datingscript.com/wp-content/uploads/2020/04/logo.png",
     "demoUrl": "https://play.google.com/store/apps/details?id=com.datingscript",
     "sourceUrl": null,
     "client": "Proshore Nepal Pvt. Ltd."
@@ -33,8 +47,10 @@
     "id": "jageer",
     "title": "Jageer",
     "description": "Job portal mobile application.",
-    "tags": ["Flutter", "Android"],
-    "imageUrl": null,
+    "tags": [
+      "Android"
+    ],
+    "imageUrl": "https://play-lh.googleusercontent.com/hj1CcvO9Trzh6tqC4fyAY9NFfJYWlgrnp23TVRmWOyXlVEZDmtyJifwRjRFNVIH0iQXY=w480-h960-rw",
     "demoUrl": "https://play.google.com/store/apps/details?id=com.nectardigit.jageer",
     "sourceUrl": null,
     "client": "Nectar Digit Pvt. Ltd."
@@ -43,9 +59,13 @@
     "id": "filili-connect",
     "title": "Filili Connect",
     "description": "Marketplace and service connection platform.",
-    "tags": ["Android", "Maps", "Payments"],
-    "imageUrl": null,
-    "demoUrl": "https://play.google.com/store/apps/details?id=com.fililiconnect.app",
+    "tags": [
+      "Android",
+      "Maps",
+      "Payments"
+    ],
+    "imageUrl": "https://i.tracxn.com/logo/company/fililiconnect.com_Logo_08eadfa3-5f8a-463e-a112-3f4e52f2e642.jpg?format=webp&height=120&width=120",
+    "demoUrl": "https://tracxn.com/d/companies/filili-connect/__KNnVZ0BEbzRHEWzz1ogBp1qZ-YHWFduQ_Kv05ectq50#about-the-company",
     "sourceUrl": null,
     "client": "Infycel Technology Pvt. Ltd."
   },
@@ -53,10 +73,57 @@
     "id": "bazar-exchange",
     "title": "Bazar Exchange",
     "description": "E-commerce exchange platform.",
-    "tags": ["Android", "E-commerce"],
-    "imageUrl": null,
+    "tags": [
+      "Android",
+      "E-commerce"
+    ],
+    "imageUrl": "https://x.com/BazarExchange/photo",
     "demoUrl": "https://play.google.com/store/apps/details?id=com.infycel.bazarexchange",
     "sourceUrl": null,
     "client": "Infycel Technology Pvt. Ltd."
+  },
+  {
+    "id": "portfolio-site",
+    "title": "My Personal Portfolio",
+    "description": "Personal portfolio created in flutter web.",
+    "tags": [
+      "Flutter Web",
+      "Portfolio",
+      "Website"
+    ],
+    "imageUrl": null,
+    "demoUrl": "www.saugatjonchhen.com.np",
+    "sourceUrl": "https://github.com/saugatjonchhen/Portfolio-Site---Flutter",
+    "client": "Self Project"
+  },
+  {
+    "id": "sumx",
+    "title": "SumX App",
+    "description": "An EPR Suite application.",
+    "tags": [
+      "ERP",
+      "Android",
+      "iOS",
+      "AI"
+    ],
+    "imageUrl": "https://sumxai.com/_next/image?url=%2Fsumx-logo-new.png&w=256&q=75",
+    "demoUrl": "https://sumxai.com/",
+    "sourceUrl": null,
+    "client": "SumX Inc. pvt. ltd (Freelance)"
+  },
+  {
+    "id": "dumci",
+    "title": "Dumci",
+    "description": "A food/calorie tracking app.",
+    "tags": [
+      "Firebase",
+      "Android",
+      "iOS",
+      "AI"
+    ],
+    "imageUrl": "https://dumci.com/assets/images/logo.png",
+    "demoUrl": "https://play.google.com/store/apps/details?id=com.dumci.nutritionapp&hl=en",
+    "sourceUrl": null,
+    "client": "BitsKraft pvt. ltd."
   }
 ]

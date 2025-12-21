@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/utils/helper_functions.dart';
 import '../data/models/education.dart';
 import '../data/models/experience.dart';
 import '../data/models/project.dart';
@@ -68,3 +69,42 @@ final portfolioProvider =
     AsyncNotifierProvider<PortfolioNotifier, PortfolioState>(
   PortfolioNotifier.new,
 );
+
+extension PortfolioMetrics on PortfolioState {
+
+  // --- 1. YEARS WORKED (Corrected) ---
+  int get yearsWorked {
+    if (experience.isEmpty) return 0;
+
+    double totalDays = 0;
+    for (var job in experience) {
+      // Split using the en-dash (–) from your screenshot
+      final dateParts = job.duration.split(RegExp(r'[–\-]'));
+
+      if (dateParts.length == 2) {
+        final start = parseDate(dateParts[0].trim());
+        final end = parseDate(dateParts[1].trim());
+
+        // Calculate difference in days for this specific job
+        totalDays += end.difference(start).inDays;
+      }
+    }
+
+    // Convert total days to years.
+    // Based on 2017-2025, this should result in 8.
+    return (totalDays / 365.25).floor();
+  }
+
+  // --- 2. TECH STACK (Unique Skill Count) ---
+  // If your JSON has "Flutter" in two categories, this counts it only ONCE.
+  int get techStackCount {
+    final allUniqueSkills = skills.values.expand((list) => list).toSet();
+    return allUniqueSkills.length;
+  }
+
+  // --- 3. MASTERY (Dynamic Category Count) ---
+  // A common portfolio metric is the number of "Core Competencies" (Categories)
+  int get masteryCount {
+    return skills.keys.length; // e.g., Languages, Frameworks, Tools = 3
+  }
+}

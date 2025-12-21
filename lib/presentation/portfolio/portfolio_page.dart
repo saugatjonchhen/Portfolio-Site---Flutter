@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/utils/helper_functions.dart';
 import '../../core/utils/responsive.dart';
 import '../../data/models/project.dart';
 import '../../providers/portfolio_provider.dart';
@@ -79,16 +80,14 @@ class _PortfolioPageState extends ConsumerState<PortfolioPage> {
                 const SizedBox(height: 40),
 
                 // --- FILTER TABS ---
-                SizedBox(
-                  height: 50,
-                  child: ListView.separated(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: horizontalPadding),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: categories.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
+                // Remove the SizedBox to allow the container to grow vertically
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Wrap(
+                    spacing: 12, // Horizontal space between the tabs
+                    runSpacing: 12, // Vertical space between the lines
+                    alignment: WrapAlignment.start, // Align to the left
+                    children: categories.map((category) {
                       return _FilterTab(
                         label: category,
                         isSelected: category == _selectedCategory,
@@ -96,7 +95,7 @@ class _PortfolioPageState extends ConsumerState<PortfolioPage> {
                           _selectedCategory = category;
                         }),
                       );
-                    },
+                    }).toList(),
                   ),
                 ),
 
@@ -221,15 +220,50 @@ class _ProjectCardState extends State<_ProjectCard> {
                           : null,
                     ),
                     // Fallback icon if no image
-                    child: project.imageUrl == null
-                        ? Center(
-                            child: Icon(
-                              Icons.code,
-                              size: 50,
-                              color: theme.colorScheme.primary,
-                            ),
+                    child: project.imageUrl != null
+                        ? Image.network(
+                            project.imageUrl!,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback if the website can't be screenshotted
+                              return Container(
+                                color: Colors.grey[800],
+                                child: const Icon(Icons.language,
+                                    color: Colors.white),
+                              );
+                            },
                           )
-                        : null,
+                        : project.demoUrl == null
+                            ? Center(
+                                child: Icon(
+                                  Icons.code,
+                                  size: 50,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              )
+                            : Image.network(
+                                getThumbnail(project.demoUrl!),
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Fallback if the website can't be screenshotted
+                                  return Container(
+                                    color: Colors.grey[800],
+                                    child: const Icon(Icons.language,
+                                        color: Colors.white),
+                                  );
+                                },
+                              ),
                   ),
 
                   // "Client/Company" Floating Badge

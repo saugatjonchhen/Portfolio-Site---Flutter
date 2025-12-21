@@ -1,122 +1,148 @@
 // lib/presentation/home/components/home_page_hero.dart (NEW FILE)
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:my_portfolio/data/models/education.dart';
+import 'package:my_portfolio/data/models/experience.dart';
 import 'package:my_portfolio/presentation/components/profile_card.dart';
 
 import '../../core/utils/responsive.dart';
 import '../../data/content/resume_content.dart';
+import '../../providers/portfolio_provider.dart';
 
-class HomePageHero extends StatelessWidget {
+class HomePageHero extends ConsumerWidget {
   const HomePageHero({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final resumeAsync = ref.watch(portfolioProvider);
 
     // Horizontal padding only applies to the scrollable content
     double horizontalPadding =
         ResponsiveLayout.isLargeScreen(context) ? 80 : 24;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding,
-        vertical: 40,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Mobile/Tablet View needs the card shown here if not using the main Row
-          if (!ResponsiveLayout.isLargeScreen(context)) const ProfileCard(),
-          if (!ResponsiveLayout.isLargeScreen(context))
-            const SizedBox(
-              height: 40,
-            ),
+    return resumeAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error loading data: $err')),
+        data: (resumeData) {
+          final latestExp = resumeData.experience.isNotEmpty
+              ? resumeData.experience.first
+              : null;
+          final latestEdu = resumeData.education.isNotEmpty
+              ? resumeData.education.first
+              : null;
 
-          // --- 1. LARGE HEADER TEXT (The 'SOFTWARE ENGINEER' section) ---
-          Text(
-            'SENIOR',
-            style: theme.textTheme.displayLarge!.copyWith(
-              fontSize: ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 3,
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: 40,
             ),
-          ),
-          Text(
-            'MOBILE DEVELOPER',
-            style: theme.textTheme.displayLarge!.copyWith(
-              fontSize: ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
-              fontWeight: FontWeight.w900,
-              color: theme.colorScheme.secondary, // Subtle secondary color
-              letterSpacing: 3,
-            ),
-          ),
-          const SizedBox(height: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Mobile/Tablet View needs the card shown here if not using the main Row
+                if (!ResponsiveLayout.isLargeScreen(context))
+                  const ProfileCard(),
+                if (!ResponsiveLayout.isLargeScreen(context))
+                  const SizedBox(
+                    height: 40,
+                  ),
 
-          // --- 2. TAGLINE ---
-          Text(
-            'Passionate about creating intuitive and engaging user experiences. Specialized in transforming ideas into beautifully crafted, performant applications.',
-            style: theme.textTheme.titleLarge!.copyWith(
-              color: theme.textTheme.bodyMedium!.color,
-              fontSize: ResponsiveLayout.isLargeScreen(context) ? 24 : 18,
-            ),
-          ),
-          const SizedBox(height: 60),
-
-          // --- 3. METRICS (The +12, +46 section) ---
-          ResponsiveLayout.isLargeScreen(context)
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _MetricItem(
-                      value: '+8',
-                      label: 'Years Experience',
-                      theme: theme,
-                    ),
-                    _MetricItem(
-                      value: '+15',
-                      label: 'Projects Completed',
-                      theme: theme,
-                    ),
-                    _MetricItem(
-                      value: '+7',
-                      label: 'Tech Stack Mastery',
-                      theme: theme,
-                    ),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _MetricItem(
-                      value: '+8',
-                      label: 'Years Experience',
-                      theme: theme,
-                    ),
-                    const SizedBox(height: 20),
-                    _MetricItem(
-                      value: '+15',
-                      label: 'Projects Completed',
-                      theme: theme,
-                    ),
-                    const SizedBox(height: 20),
-                    _MetricItem(
-                      value: '+7',
-                      label: 'Tech Stack Mastery',
-                      theme: theme,
-                    ),
-                  ],
+                // --- 1. LARGE HEADER TEXT (The 'SOFTWARE ENGINEER' section) ---
+                Text(
+                  'SENIOR',
+                  style: theme.textTheme.displayLarge!.copyWith(
+                    fontSize: ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 3,
+                  ),
                 ),
-          const SizedBox(height: 60),
+                Text(
+                  'MOBILE DEVELOPER',
+                  style: theme.textTheme.displayLarge!.copyWith(
+                    fontSize: ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
+                    fontWeight: FontWeight.w900,
+                    color: theme.colorScheme.secondary,
+                    // Subtle secondary color
+                    letterSpacing: 3,
+                  ),
+                ),
+                const SizedBox(height: 30),
 
-          const ExperienceSnippetCard(),
-          const EducationSnippetCard(),
+                // --- 2. TAGLINE ---
+                Text(
+                  'Passionate about creating intuitive and engaging user experiences. Specialized in transforming ideas into beautifully crafted, performant applications.',
+                  style: theme.textTheme.titleLarge!.copyWith(
+                    color: theme.textTheme.bodyMedium!.color,
+                    fontSize: ResponsiveLayout.isLargeScreen(context) ? 24 : 18,
+                  ),
+                ),
+                const SizedBox(height: 60),
 
-          // --- 6. SKILLS SUMMARY SNIPPET ---
-          const SkillsSummarySnippet(),
-        ],
-      ),
-    );
+                // --- 3. METRICS (The +12, +46 section) ---
+                ResponsiveLayout.isLargeScreen(context)
+                    ? resumeAsync.when(
+                        data: (state) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _MetricItem(
+                              value: '+${state.yearsWorked}',
+                              label: 'Years Experience',
+                              theme: theme,
+                            ),
+                            _MetricItem(
+                              value: '+${state.projects.length}',
+                              label: 'Projects Completed',
+                              theme: theme,
+                            ),
+                            _MetricItem(
+                              value: '+${state.masteryCount}',
+                              label: 'Tech Stack',
+                              theme: theme,
+                            ),
+                          ],
+                        ),
+                        loading: () => const CircularProgressIndicator(),
+                        error: (err, stack) => Text('Error: $err'),
+                      )
+                    : resumeAsync.when(
+                        data: (state) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _MetricItem(
+                              value: '+${state.yearsWorked}',
+                              label: 'Years Experience',
+                              theme: theme,
+                            ),
+                            _MetricItem(
+                              value: '+${state.projects.length}',
+                              label: 'Projects Completed',
+                              theme: theme,
+                            ),
+                            _MetricItem(
+                              value: '+${state.masteryCount}',
+                              label: 'Tech Stack',
+                              theme: theme,
+                            ),
+                          ],
+                        ),
+                        loading: () => const CircularProgressIndicator(),
+                        error: (err, stack) => Text('Error: $err'),
+                      ),
+                const SizedBox(height: 60),
+
+                ExperienceSnippetCard(latestExp),
+                EducationSnippetCard(latestEdu),
+
+                // --- 6. SKILLS SUMMARY SNIPPET ---
+                const SkillsSummarySnippet(),
+              ],
+            ),
+          );
+        });
   }
 }
 
@@ -197,10 +223,16 @@ class HomeTimelineSnippetCard extends StatelessWidget {
                   ),
                 ),
                 // Corner Indicator/Arrow
-                FaIcon(
-                  FontAwesomeIcons.arrowUpRightFromSquare,
-                  size: 16,
-                  color: theme.colorScheme.primary.withOpacity(0.7),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    context.go('/resume');
+                  },
+                  icon: FaIcon(
+                    FontAwesomeIcons.arrowUpRightFromSquare,
+                    size: 16,
+                    color: theme.colorScheme.primary.withOpacity(0.7),
+                  ),
                 ),
               ],
             ),
@@ -241,13 +273,15 @@ class HomeTimelineSnippetCard extends StatelessWidget {
 // --- UPDATED SNIPPET WIDGETS TO USE HomeTimelineSnippetCard ---
 // ------------------------------------------------------------------
 class ExperienceSnippetCard extends StatelessWidget {
-  const ExperienceSnippetCard({super.key});
+  const ExperienceSnippetCard(this.latestExperience, {super.key});
+
+  final Experience? latestExperience;
 
   @override
   Widget build(BuildContext context) {
-    final items = ResumeContent.experiences;
-    items.sort((a, b) => b.duration.compareTo(a.duration));
-    final latestExperience = items.isEmpty ? null : items.first;
+    // final items = ResumeContent.experiences;
+    // items.sort((a, b) => b.duration.compareTo(a.duration));
+    // final latestExperience = items.isEmpty ? null : items.first;
 
     if (latestExperience == null) return const SizedBox.shrink();
 
@@ -266,10 +300,10 @@ class ExperienceSnippetCard extends StatelessWidget {
             width: double.infinity,
             child: HomeTimelineSnippetCard(
               // <-- REPLACED TimelineCard
-              title: latestExperience.company,
-              subtitle: latestExperience.title,
-              duration: latestExperience.duration,
-              description: latestExperience.description,
+              title: latestExperience?.title ?? "",
+              subtitle: latestExperience?.company ?? "",
+              duration: latestExperience?.duration ?? "",
+              description: latestExperience?.description ?? "",
             ),
           ),
         ],
@@ -279,14 +313,16 @@ class ExperienceSnippetCard extends StatelessWidget {
 }
 
 class EducationSnippetCard extends StatelessWidget {
-  const EducationSnippetCard({super.key});
+  const EducationSnippetCard(this.latestEducation, {super.key});
+
+  final Education? latestEducation;
 
   @override
   Widget build(BuildContext context) {
-    final items = ResumeContent.education;
-    items.sort((a, b) => b.years.compareTo(a.years));
-
-    final latestEducation = items.isEmpty ? null : items.first;
+    // final items = ResumeContent.education;
+    // items.sort((a, b) => b.years.compareTo(a.years));
+    //
+    // final latestEducation = items.isEmpty ? null : items.first;
 
     if (latestEducation == null) return const SizedBox.shrink();
 
@@ -305,11 +341,11 @@ class EducationSnippetCard extends StatelessWidget {
             width: double.infinity,
             child: HomeTimelineSnippetCard(
               // <-- REPLACED TimelineCard
-              title: latestEducation.institution,
-              subtitle: latestEducation.degree,
-              duration: latestEducation.years,
+              title: latestEducation?.institution ?? "",
+              subtitle: latestEducation?.degree ?? "",
+              duration: latestEducation?.years ?? "",
               description:
-                  latestEducation.description ?? 'No description provided.',
+                  latestEducation?.description ?? 'No description provided.',
             ),
           ),
         ],
