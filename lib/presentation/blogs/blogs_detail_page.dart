@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +13,22 @@ class BlogDetailPage extends StatelessWidget {
   final String blogId;
 
   const BlogDetailPage({super.key, required this.blogId});
+
+  bool _isMarkdown(String content) {
+    // Simple heuristic: check if it contains Markdown patterns
+    final markdownPatterns = [
+      r'^#', // headings
+      r'\*\*.*\*\*', // bold
+      r'\* .*', // lists
+      r'\[.*\]\(.*\)', // links
+      r'```', // code blocks
+      r'> ' // blockquote
+    ];
+
+    return markdownPatterns.any(
+      (pattern) => RegExp(pattern, multiLine: true).hasMatch(content),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,20 +148,38 @@ class BlogDetailPage extends StatelessWidget {
                     const Divider(),
                     const SizedBox(height: 40),
 
-                    // BODY CONTENT (Simple styling for now)
-                    Text(
-                      blog.content,
-                      // Displays the raw text (or Markdown if you add the package)
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            height: 1.8, // Good line height for reading
-                            fontSize: 18,
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .color!
-                                .withOpacity(0.9),
-                          ),
-                    ),
+                    if (_isMarkdown(blog.content))
+                      MarkdownBody(
+                        data: blog.content,
+                        styleSheet:
+                            MarkdownStyleSheet.fromTheme(Theme.of(context))
+                                .copyWith(
+                          p: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                fontSize: 18,
+                                height: 1.8,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .color!
+                                    .withOpacity(0.9),
+                              ),
+                        ),
+                      )
+                    else
+                      // BODY CONTENT (Simple styling for now)
+                      Text(
+                        blog.content,
+                        // Displays the raw text (or Markdown if you add the package)
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              height: 1.8, // Good line height for reading
+                              fontSize: 18,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .color!
+                                  .withOpacity(0.9),
+                            ),
+                      ),
 
                     const SizedBox(height: 60),
 

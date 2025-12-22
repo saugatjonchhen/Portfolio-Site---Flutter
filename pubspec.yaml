@@ -17,6 +17,7 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   # Animations/Visuals
   flutter_animate: ^4.1.1
+  flutter_markdown_plus: ^1.0.5
 
 dev_dependencies:
   flutter_test:
