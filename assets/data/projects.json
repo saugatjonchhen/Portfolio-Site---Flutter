@@ -6,8 +6,7 @@
     "tags": [
       "Flutter",
       "Android",
-      "iOS",
-      "Agile"
+      "iOS"
     ],
     "imageUrl": "https://play-lh.googleusercontent.com/g1K8SOnyWEfxlF0jR1hd5x3pYZnk_pq5WUAykMuN34IIDHEEtPric5mJrJQBUvF1ggA=w480-h960-rw",
     "demoUrl": "https://www.educonnect.com.au",
@@ -21,8 +20,7 @@
     "tags": [
       "Flutter Web",
       "SAP",
-      "POS",
-      "Website"
+      "POS"
     ],
     "imageUrl": null,
     "demoUrl": null,
@@ -87,9 +85,7 @@
     "title": "My Personal Portfolio",
     "description": "Personal portfolio created in flutter web.",
     "tags": [
-      "Flutter Web",
-      "Portfolio",
-      "Website"
+      "Flutter Web"
     ],
     "imageUrl": null,
     "demoUrl": "www.saugatjonchhen.com.np",

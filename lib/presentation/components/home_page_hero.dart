@@ -113,17 +113,17 @@ class HomePageHero extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             _MetricItem(
-                              value: '+${state.yearsWorked}',
+                              value: '${state.yearsWorked}+',
                               label: 'Years Experience',
                               theme: theme,
                             ),
                             _MetricItem(
-                              value: '+${state.projects.length}',
+                              value: '${state.projects.length}+',
                               label: 'Projects Completed',
                               theme: theme,
                             ),
                             _MetricItem(
-                              value: '+${state.masteryCount}',
+                              value: '${state.masteryCount}+',
                               label: 'Tech Stack',
                               theme: theme,
                             ),

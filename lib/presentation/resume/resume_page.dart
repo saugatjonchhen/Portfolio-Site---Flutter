@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/utils/responsive.dart';
 import '../../data/content/resume_content.dart';
@@ -100,11 +101,12 @@ class _DownloadButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Starting file download... (Placeholder)')),
-        );
+      onPressed: () async {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //       content: Text('Starting file download... (resume.pdf)')),
+        // );
+        downloadResume();
       },
       icon: const FaIcon(FontAwesomeIcons.filePdf, size: 20),
       label: const Text('Download PDF'),
@@ -116,6 +118,13 @@ class _DownloadButton extends StatelessWidget {
         textStyle: Theme.of(context).textTheme.titleSmall,
       ),
     );
+  }
+}
+
+void downloadResume() async {
+  final Uri url = Uri.parse('resume.pdf');
+  if (!await launchUrl(url)) {
+    throw Exception('Could not launch $url');
   }
 }
 

@@ -50,24 +50,12 @@ class ResumeContent {
 
   static const Map<String, List<String>> skills = {
     // 1. Languages
-    'Languages': [
-      'Dart',
-      'Kotlin',
-      'Java',
-      'Php',
-      'Javascript',
-      'C#'
-    ],
+    'Languages': ['Dart', 'Kotlin', 'Java', 'Php', 'Javascript', 'C#'],
     // 2. Frameworks & Libraries
     'Frameworks & Libraries': [
-      'FastAPI',
       'Flutter (iOS/Android/Web/iPadOS)',
-      'NumPy',
-      'OpenCV',
-      'Pandas',
-      'PyTorch',
-      'Reactjs',
-      'Nextjs'
+      'Android SDK',
+      'Laravel (PHP)',
     ],
     // 3. State Management (Flutter)
     'State Management (Flutter)': ['BLoC', 'Provider', 'Riverpod'],

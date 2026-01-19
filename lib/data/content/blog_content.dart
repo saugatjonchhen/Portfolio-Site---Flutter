@@ -164,62 +164,62 @@ effectively.
 ''';
 
   static const List<Blog> blogs = [
-    Blog(
-      id: '1',
-      title: 'The Future of Flutter Development',
-      excerpt:
-          'Exploring the roadmap of Flutter, Impeller engine, and what it means for cross-platform developers in 2024.',
-      content: _dummyContent,
-      author: 'John Doe',
-      publishDate: 'Dec 12, 2023',
-      readTime: '5 min read',
-      imageUrl:
-          'https://via.placeholder.com/800x400/0F172A/00BFA5?text=Flutter+Future',
-      category: 'Tech',
-      tags: ['Flutter', 'Mobile', 'Dart'],
-    ),
-    Blog(
-      id: '2',
-      title: 'Mastering State Management',
-      excerpt:
-          'A deep dive into Riverpod 2.0. Understanding providers, notifiers, and code generation for scalable apps.',
-      content: _dummyContent,
-      author: 'John Doe',
-      publishDate: 'Nov 28, 2023',
-      readTime: '8 min read',
-      imageUrl:
-          'https://via.placeholder.com/800x400/0F172A/7C3AED?text=State+Management',
-      category: 'Tutorial',
-      tags: ['Riverpod', 'Architecture'],
-    ),
-    Blog(
-      id: '3',
-      title: 'UI/UX Principles for Developers',
-      excerpt:
-          'How to think like a designer. Basic principles of spacing, typography, and color theory for engineers.',
-      content: _dummyContent,
-      author: 'John Doe',
-      publishDate: 'Oct 15, 2023',
-      readTime: '6 min read',
-      imageUrl:
-          'https://via.placeholder.com/800x400/0F172A/FBBF24?text=Design+Principles',
-      category: 'Design',
-      tags: ['UI/UX', 'Figma'],
-    ),
-    Blog(
-      id: '4',
-      title: 'From Junior to Senior Engineer',
-      excerpt:
-          'Lessons learned over 5 years of software engineering. Soft skills, mentorship, and technical growth.',
-      content: _dummyContent,
-      author: 'John Doe',
-      publishDate: 'Sep 02, 2023',
-      readTime: '10 min read',
-      imageUrl:
-          'https://via.placeholder.com/800x400/0F172A/0EA5E9?text=Career+Growth',
-      category: 'Career',
-      tags: ['Career', 'Soft Skills'],
-    ),
+    // Blog(
+    //   id: '1',
+    //   title: 'The Future of Flutter Development',
+    //   excerpt:
+    //       'Exploring the roadmap of Flutter, Impeller engine, and what it means for cross-platform developers in 2024.',
+    //   content: _dummyContent,
+    //   author: 'John Doe',
+    //   publishDate: 'Dec 12, 2023',
+    //   readTime: '5 min read',
+    //   imageUrl:
+    //       'https://via.placeholder.com/800x400/0F172A/00BFA5?text=Flutter+Future',
+    //   category: 'Tech',
+    //   tags: ['Flutter', 'Mobile', 'Dart'],
+    // ),
+    // Blog(
+    //   id: '2',
+    //   title: 'Mastering State Management',
+    //   excerpt:
+    //       'A deep dive into Riverpod 2.0. Understanding providers, notifiers, and code generation for scalable apps.',
+    //   content: _dummyContent,
+    //   author: 'John Doe',
+    //   publishDate: 'Nov 28, 2023',
+    //   readTime: '8 min read',
+    //   imageUrl:
+    //       'https://via.placeholder.com/800x400/0F172A/7C3AED?text=State+Management',
+    //   category: 'Tutorial',
+    //   tags: ['Riverpod', 'Architecture'],
+    // ),
+    // Blog(
+    //   id: '3',
+    //   title: 'UI/UX Principles for Developers',
+    //   excerpt:
+    //       'How to think like a designer. Basic principles of spacing, typography, and color theory for engineers.',
+    //   content: _dummyContent,
+    //   author: 'John Doe',
+    //   publishDate: 'Oct 15, 2023',
+    //   readTime: '6 min read',
+    //   imageUrl:
+    //       'https://via.placeholder.com/800x400/0F172A/FBBF24?text=Design+Principles',
+    //   category: 'Design',
+    //   tags: ['UI/UX', 'Figma'],
+    // ),
+    // Blog(
+    //   id: '4',
+    //   title: 'From Junior to Senior Engineer',
+    //   excerpt:
+    //       'Lessons learned over 5 years of software engineering. Soft skills, mentorship, and technical growth.',
+    //   content: _dummyContent,
+    //   author: 'John Doe',
+    //   publishDate: 'Sep 02, 2023',
+    //   readTime: '10 min read',
+    //   imageUrl:
+    //       'https://via.placeholder.com/800x400/0F172A/0EA5E9?text=Career+Growth',
+    //   category: 'Career',
+    //   tags: ['Career', 'Soft Skills'],
+    // ),
     Blog(
       id: 'flutter-seo-canvaskit-netlify',
       title:
