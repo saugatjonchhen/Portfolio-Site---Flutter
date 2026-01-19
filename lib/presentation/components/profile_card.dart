@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // URL for a generic, publicly available profile image placeholder.
 const String _kPlaceholderImageUrl = 'https://i.pravatar.cc/300';
@@ -94,19 +95,66 @@ class ProfileCard extends StatelessWidget {
             const SizedBox(height: 30),
 
             // Social Links (as seen in the image)
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                FaIcon(FontAwesomeIcons.facebookF, size: 20),
-                FaIcon(FontAwesomeIcons.instagram, size: 20),
-                FaIcon(FontAwesomeIcons.linkedinIn, size: 20),
-                FaIcon(FontAwesomeIcons.twitter, size: 20),
-                FaIcon(FontAwesomeIcons.github, size: 20),
+                GestureDetector(
+                  onTap: () {
+                    openURL("https://www.facebook.com/saugat.john09");
+                  },
+                  child: const FaIcon(
+                    FontAwesomeIcons.facebookF,
+                    size: 20,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    openURL("https://www.instagram.com/saugat.john09");
+                  },
+                  child: const FaIcon(
+                    FontAwesomeIcons.instagram,
+                    size: 20,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    openURL("https://www.linkedin.com/in/saugat-john09/");
+                  },
+                  child: const FaIcon(
+                    FontAwesomeIcons.linkedinIn,
+                    size: 20,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    openURL("https://www.x.com/SJonchhen");
+                  },
+                  child: const FaIcon(
+                    FontAwesomeIcons.twitter,
+                    size: 20,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    openURL("https://github.com/saugatjonchhen");
+                  },
+                  child: const FaIcon(
+                    FontAwesomeIcons.github,
+                    size: 20,
+                  ),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void openURL(String newUrl) async {
+    final Uri url = Uri.parse(newUrl);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
   }
 }
