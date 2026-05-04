@@ -5,6 +5,7 @@ import 'components/app_bar_widget.dart';
 import 'components/footer.dart';
 import 'components/home_page_hero.dart';
 import 'components/profile_card.dart';
+import 'components/contact_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -49,8 +50,8 @@ class HomePage extends StatelessWidget {
                         const HomePageHero(),
                         const SizedBox(height: 80),
 
-                        // --- MINI SECTIONS (Snippets) ---
-                        // ... (Placeholder for Projects, Skills, Education, Experience Snippets) ...
+                        const ContactSection(),
+                        const SizedBox(height: 100),
 
                         const Footer(),
                         const SizedBox(height: 20),
@@ -78,7 +79,8 @@ class HomePage extends StatelessWidget {
               const HomePageHero(),
               const SizedBox(height: 80),
 
-              // ... (Snippets placeholders) ...
+              const ContactSection(),
+              const SizedBox(height: 100),
 
               const Footer(),
               const SizedBox(height: 20),

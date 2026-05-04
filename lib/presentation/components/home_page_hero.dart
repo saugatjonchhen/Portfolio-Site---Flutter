@@ -1,12 +1,15 @@
 // lib/presentation/home/components/home_page_hero.dart (NEW FILE)
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:my_portfolio/data/models/education.dart';
 import 'package:my_portfolio/data/models/experience.dart';
 import 'package:my_portfolio/presentation/components/profile_card.dart';
+import 'package:my_portfolio/core/theme/app_theme.dart';
 
 import '../../core/utils/responsive.dart';
 import '../../data/content/resume_content.dart';
@@ -45,31 +48,42 @@ class HomePageHero extends ConsumerWidget {
               children: [
                 // Mobile/Tablet View needs the card shown here if not using the main Row
                 if (!ResponsiveLayout.isLargeScreen(context))
-                  const ProfileCard(),
+                  const ProfileCard()
+                      .animate()
+                      .fadeIn(duration: 600.ms)
+                      .moveY(begin: 30, end: 0),
                 if (!ResponsiveLayout.isLargeScreen(context))
                   const SizedBox(
                     height: 40,
                   ),
 
-                // --- 1. LARGE HEADER TEXT (The 'SOFTWARE ENGINEER' section) ---
-                Text(
-                  'SENIOR',
-                  style: theme.textTheme.displayLarge!.copyWith(
-                    fontSize: ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 3,
-                  ),
-                ),
-                Text(
-                  'MOBILE DEVELOPER',
-                  style: theme.textTheme.displayLarge!.copyWith(
-                    fontSize: ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
-                    fontWeight: FontWeight.w900,
-                    color: theme.colorScheme.secondary,
-                    // Subtle secondary color
-                    letterSpacing: 3,
-                  ),
-                ),
+                // --- 1. LARGE HEADER TEXT ---
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'SENIOR',
+                      style: theme.textTheme.displayLarge!.copyWith(
+                        fontSize:
+                            ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 3,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    Text(
+                      'MOBILE DEVELOPER',
+                      style: theme.textTheme.displayLarge!.copyWith(
+                        fontSize:
+                            ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
+                        fontWeight: FontWeight.w900,
+                        color: theme.colorScheme.secondary,
+                        letterSpacing: 3,
+                      ),
+                    ),
+                  ],
+                ).animate().fadeIn(duration: 800.ms).moveX(begin: -30, end: 0),
+
                 const SizedBox(height: 30),
 
                 // --- 2. TAGLINE ---
@@ -78,67 +92,77 @@ class HomePageHero extends ConsumerWidget {
                   style: theme.textTheme.titleLarge!.copyWith(
                     color: theme.textTheme.bodyMedium!.color,
                     fontSize: ResponsiveLayout.isLargeScreen(context) ? 24 : 18,
+                    height: 1.5,
                   ),
-                ),
+                )
+                    .animate(delay: 200.ms)
+                    .fadeIn(duration: 800.ms)
+                    .moveY(begin: 20, end: 0),
+
                 const SizedBox(height: 60),
 
-                // --- 3. METRICS (The +12, +46 section) ---
-                ResponsiveLayout.isLargeScreen(context)
-                    ? resumeAsync.when(
-                        data: (state) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _MetricItem(
-                              value: '+${state.yearsWorked}',
-                              label: 'Years Experience',
-                              theme: theme,
-                            ),
-                            _MetricItem(
-                              value: '+${state.projects.length}',
-                              label: 'Projects Completed',
-                              theme: theme,
-                            ),
-                            _MetricItem(
-                              value: '+${state.masteryCount}',
-                              label: 'Tech Stack',
-                              theme: theme,
-                            ),
-                          ],
-                        ),
-                        loading: () => const CircularProgressIndicator(),
-                        error: (err, stack) => Text('Error: $err'),
-                      )
-                    : resumeAsync.when(
-                        data: (state) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _MetricItem(
-                              value: '${state.yearsWorked}+',
-                              label: 'Years Experience',
-                              theme: theme,
-                            ),
-                            _MetricItem(
-                              value: '${state.projects.length}+',
-                              label: 'Projects Completed',
-                              theme: theme,
-                            ),
-                            _MetricItem(
-                              value: '${state.masteryCount}+',
-                              label: 'Tech Stack',
-                              theme: theme,
-                            ),
-                          ],
-                        ),
-                        loading: () => const CircularProgressIndicator(),
-                        error: (err, stack) => Text('Error: $err'),
-                      ),
-                const SizedBox(height: 60),
+                // --- 3. METRICS ---
+                (ResponsiveLayout.isLargeScreen(context)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _MetricItem(
+                                value: '+${resumeData.yearsWorked}',
+                                label: 'Years Experience',
+                                theme: theme,
+                              ),
+                              _MetricItem(
+                                value: '+${resumeData.projects.length}',
+                                label: 'Projects Completed',
+                                theme: theme,
+                              ),
+                              _MetricItem(
+                                value: '+${resumeData.masteryCount}',
+                                label: 'Tech Stack',
+                                theme: theme,
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _MetricItem(
+                                value: '${resumeData.yearsWorked}+',
+                                label: 'Years Experience',
+                                theme: theme,
+                              ),
+                              _MetricItem(
+                                value: '${resumeData.projects.length}+',
+                                label: 'Projects Completed',
+                                theme: theme,
+                              ),
+                              _MetricItem(
+                                value: '${resumeData.masteryCount}+',
+                                label: 'Tech Stack',
+                                theme: theme,
+                              ),
+                            ],
+                          ))
+                    .animate(delay: 400.ms)
+                    .fadeIn(duration: 800.ms)
+                    .scale(begin: const Offset(0.95, 0.95)),
 
-                ExperienceSnippetCard(latestExp),
-                EducationSnippetCard(latestEdu),
+                const SizedBox(height: 80),
+
+                ExperienceSnippetCard(latestExp)
+                    .animate(delay: 600.ms)
+                    .fadeIn(duration: 800.ms)
+                    .moveY(begin: 30, end: 0),
+
+                EducationSnippetCard(latestEdu)
+                    .animate(delay: 800.ms)
+                    .fadeIn(duration: 800.ms)
+                    .moveY(begin: 30, end: 0),
 
                 // --- 6. SKILLS SUMMARY SNIPPET ---
-                const SkillsSummarySnippet(),
+                const SkillsSummarySnippet()
+                    .animate(delay: 1000.ms)
+                    .fadeIn(duration: 800.ms),
               ],
             ),
           );
@@ -197,72 +221,99 @@ class HomeTimelineSnippetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      // Dark grey background, matching the aesthetic
-      color: theme.cardTheme.color,
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title (Large, Bold Text)
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.headlineMedium!.copyWith(
-                      fontWeight: FontWeight.w900,
-                      fontSize:
-                          ResponsiveLayout.isLargeScreen(context) ? 28 : 24,
+    final isDark = theme.brightness == Brightness.dark;
+
+    final glassSurface =
+        isDark ? AppTheme.glassSurfaceDark : AppTheme.glassSurfaceLight;
+    final glassBorder =
+        isDark ? AppTheme.glassBorderDark : AppTheme.glassBorderLight;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(28.0),
+          decoration: BoxDecoration(
+            color: glassSurface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: glassBorder.withOpacity(0.1),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title (Large, Bold Text)
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.w900,
+                        fontSize:
+                            ResponsiveLayout.isLargeScreen(context) ? 28 : 24,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ),
+                  // Corner Indicator/Arrow
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      context.go('/resume');
+                    },
+                    icon: FaIcon(
+                      FontAwesomeIcons.arrowUpRightFromSquare,
+                      size: 16,
+                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Subtitle (Role/Degree)
+              Text(
+                subtitle,
+                style: theme.textTheme.titleMedium!.copyWith(
+                  color: theme.colorScheme.secondary,
+                  fontWeight: FontWeight.w700,
                 ),
-                // Corner Indicator/Arrow
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    context.go('/resume');
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.arrowUpRightFromSquare,
-                    size: 16,
-                    color: theme.colorScheme.primary.withOpacity(0.7),
+              ),
+              const SizedBox(height: 16),
+
+              // Description
+              Text(
+                description,
+                style: theme.textTheme.bodyLarge!.copyWith(
+                  height: 1.6,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Duration/Date
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  duration,
+                  style: theme.textTheme.bodySmall!.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Subtitle (Role/Degree)
-            Text(
-              subtitle,
-              style: theme.textTheme.titleMedium!.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w500,
               ),
-            ),
-            const SizedBox(height: 16),
-
-            // Description
-            Text(
-              description,
-              style: theme.textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 16),
-
-            // Duration/Date
-            Text(
-              duration,
-              style: theme.textTheme.bodySmall!.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -362,20 +413,23 @@ class SkillsSummarySnippet extends StatelessWidget {
 
   // Helper function to get an icon based on a skill category string
   IconData _getIconForCategory(String category) {
-    if (category.toLowerCase().contains('language'))
+    if (category.toLowerCase().contains('language')) {
       return FontAwesomeIcons.code;
-    if (category.toLowerCase().contains('framework'))
+    }
+    if (category.toLowerCase().contains('framework')) {
       return FontAwesomeIcons.layerGroup;
-    if (category.toLowerCase().contains('backend'))
+    }
+    if (category.toLowerCase().contains('backend')) {
       return FontAwesomeIcons.server;
-    if (category.toLowerCase().contains('cloud')) return FontAwesomeIcons.cloud;
-    return FontAwesomeIcons.tools;
+    }
+    if (category.toLowerCase().contains('cloud')) {
+      return FontAwesomeIcons.cloud;
+    }
+    return FontAwesomeIcons.screwdriverWrench;
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     const universalAestheticColors = [
       Color(0xFF34D399), // Theme Primary (Energetic Teal/Green)
       Color(0xFF7C3AED), // Deep Berry (Professional Purple)
@@ -473,7 +527,7 @@ class _SkillSnippetCard extends StatelessWidget {
                 Text(
                   detail,
                   style: theme.textTheme.bodySmall!.copyWith(
-                    color: theme.colorScheme.onPrimary.withOpacity(0.8),
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -520,7 +574,7 @@ class HeadlineSectionTitle extends StatelessWidget {
             fontWeight: FontWeight.w900,
             letterSpacing: 2,
             // First part is subdued/faded
-            color: theme.textTheme.bodyLarge!.color!.withOpacity(0.5),
+            color: theme.textTheme.bodyLarge!.color!.withValues(alpha: 0.5),
           ),
         ),
         Text(

@@ -1,9 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:my_portfolio/core/theme/app_theme.dart';
 
-import '../../core/utils/helper_functions.dart';
 import '../../core/utils/responsive.dart';
 import '../../data/models/project.dart';
 import '../../providers/portfolio_provider.dart';
@@ -184,221 +185,241 @@ class _ProjectCardState extends State<_ProjectCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final project = widget.project;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final glassSurface =
+        isDark ? AppTheme.glassSurfaceDark : AppTheme.glassSurfaceLight;
+    final glassBorder =
+        isDark ? AppTheme.glassBorderDark : AppTheme.glassBorderLight;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
         transform: _isHovered
-            ? (Matrix4.identity()..translate(0, -8, 0)) // Lift up effect
+            ? (Matrix4.identity()
+              ..translate(0.0, -12.0, 0.0)
+              ..scale(1.02))
             : Matrix4.identity(),
-        child: Card(
-          elevation: _isHovered ? 12 : 4,
-          color: theme.colorScheme.surface,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. IMAGE & LABEL
-              Stack(
-                children: [
-                  // Image
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
-                      image: project.imageUrl != null
-                          ? DecorationImage(
-                              image: NetworkImage(project.imageUrl!),
-                              // Replace with AssetImage if local
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    // Fallback icon if no image
-                    child: project.imageUrl != null
-                        ? Image.network(
-                            project.imageUrl!,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              // Fallback if the website can't be screenshotted
-                              return Container(
-                                color: Colors.grey[800],
-                                child: const Icon(Icons.language,
-                                    color: Colors.white),
-                              );
-                            },
-                          )
-                        : project.demoUrl == null
-                            ? Center(
-                                child: Icon(
-                                  Icons.code,
-                                  size: 50,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              )
-                            : Image.network(
-                                getThumbnail(project.demoUrl!),
-                                fit: BoxFit.cover,
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  // Fallback if the website can't be screenshotted
-                                  return Container(
-                                    color: Colors.grey[800],
-                                    child: const Icon(Icons.language,
-                                        color: Colors.white),
-                                  );
-                                },
-                              ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: glassSurface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: _isHovered
+                      ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                      : glassBorder.withValues(alpha: 0.1),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: _isHovered ? 0.2 : 0.1),
+                    blurRadius: _isHovered ? 40 : 20,
+                    offset: Offset(0, _isHovered ? 20 : 10),
                   ),
-
-                  // "Client/Company" Floating Badge
-                  if (project.client != null)
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.background,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: Text(
-                          project.client!,
-                          style: theme.textTheme.labelSmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
-
-              // 2. CONTENT
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      project.title,
-                      style: theme.textTheme.headlineSmall!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      project.description,
-                      style: theme.textTheme.bodyMedium!.copyWith(
-                        color:
-                            theme.textTheme.bodyMedium!.color!.withOpacity(0.8),
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Tech Stack Chips
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: project.tags.take(4).map((tech) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. IMAGE & LABEL
+                  Stack(
+                    children: [
+                      // Image
+                      Hero(
+                        tag: 'project-${project.id}',
+                        child: Container(
+                          height: 220,
+                          width: double.infinity,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color:
-                                    theme.colorScheme.primary.withOpacity(0.2)),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.05),
                           ),
-                          child: Text(
-                            tech,
-                            style: theme.textTheme.labelSmall!.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Fira Code', // Tech font
+                          child: project.imageUrl != null
+                              ? Image.network(
+                                  project.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: theme.colorScheme.surface,
+                                      child: Icon(Icons.language,
+                                          color: theme.colorScheme.primary),
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: Icon(
+                                    Icons.code,
+                                    size: 50,
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                        ),
+                      ),
+
+                      // Overlay Gradient
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.4),
+                              ],
                             ),
                           ),
-                        );
-                      }).toList(),
-                    ),
+                        ),
+                      ),
 
-                    const SizedBox(height: 20),
-                    const Divider(),
-                    const SizedBox(height: 10),
+                      // "Client/Company" Floating Badge
+                      if (project.client != null)
+                        Positioned(
+                          top: 16,
+                          right: 16,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.8),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.white24),
+                                ),
+                                child: Text(
+                                  project.client!.toUpperCase(),
+                                  style: theme.textTheme.labelSmall!.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: theme.colorScheme.onPrimary,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
 
-                    // Actions (Code & Demo)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // 2. CONTENT
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (project.sourceUrl != null)
-                          TextButton.icon(
-                            onPressed: () {
-                              // launchUrl(Uri.parse(project.sourceUrl!));
-                            },
-                            icon:
-                                const FaIcon(FontAwesomeIcons.github, size: 16),
-                            label: const Text('Code'),
-                            style: TextButton.styleFrom(
-                              foregroundColor:
-                                  theme.textTheme.bodyMedium!.color,
-                            ),
-                          )
-                        else
-                          const SizedBox(), // Spacer if no code link
-
-                        if (project.demoUrl != null)
-                          TextButton.icon(
-                            onPressed: () {
-                              launchUrl(Uri.parse(project.demoUrl!));
-                            },
-                            icon: const FaIcon(
-                              FontAwesomeIcons.arrowUpRightFromSquare,
-                              size: 16,
-                            ),
-                            label: const Text('Live Demo'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: theme.colorScheme.primary,
-                            ),
-                          )
-                        else
-                          TextButton.icon(
-                            onPressed: () {
-                              // launchUrl(Uri.parse(project.demoUrl!));
-                            },
-                            icon: null,
-                            label: const Text(''),
-                            style: TextButton.styleFrom(
-                              foregroundColor: theme.colorScheme.primary,
-                            ),
+                        Text(
+                          project.title,
+                          style: theme.textTheme.headlineSmall!.copyWith(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 22,
+                            color: theme.colorScheme.onSurface,
                           ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          project.description,
+                          style: theme.textTheme.bodyMedium!.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                            height: 1.5,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Tech Stack Chips
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: project.tags.take(4).map((tech) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.15)),
+                              ),
+                              child: Text(
+                                tech,
+                                style: theme.textTheme.labelSmall!.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: 28),
+                        const Divider(thickness: 1),
+                        const SizedBox(height: 12),
+
+                        // Actions (Code & Demo)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            if (project.sourceUrl != null)
+                              TextButton.icon(
+                                onPressed: () {
+                                  launchUrl(Uri.parse(project.sourceUrl!));
+                                },
+                                icon: const FaIcon(FontAwesomeIcons.github, size: 18),
+                                label: const Text('Source Code'),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                  textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              )
+                            else
+                              const SizedBox(),
+
+                            if (project.demoUrl != null)
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  launchUrl(Uri.parse(project.demoUrl!));
+                                },
+                                icon: const FaIcon(
+                                  FontAwesomeIcons.arrowUpRightFromSquare,
+                                  size: 14,
+                                ),
+                                label: const Text('Live Demo'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.secondary,
+                                  foregroundColor: theme.colorScheme.onSecondary,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

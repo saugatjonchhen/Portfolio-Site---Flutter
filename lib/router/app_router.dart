@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presentation/blogs/blogs_detail_page.dart';
@@ -13,43 +14,52 @@ class AppRouter {
       GoRoute(
         path: '/',
         name: 'home',
-        pageBuilder: (context, state) => NoTransitionPage<void>(
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: const HomePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
         ),
       ),
       GoRoute(
         path: '/resume',
         name: 'resume',
-        pageBuilder: (context, state) => NoTransitionPage<void>(
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: const ResumePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
         ),
       ),
       GoRoute(
         path: '/portfolio',
         name: 'portfolio',
-        pageBuilder: (context, state) => NoTransitionPage<void>(
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: const PortfolioPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
         ),
       ),
       GoRoute(
         path: '/blogs',
-        pageBuilder: (context, state) => NoTransitionPage<void>(
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: const BlogsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
         ),
       ),
-
-      // 2. Blog Detail Page (Dynamic ID)
       GoRoute(
-        path: '/blogs/:blogId', // :blogId is a parameter
+        path: '/blogs/:blogId',
         pageBuilder: (context, state) {
-          final blogId = state.pathParameters['blogId']!; // Read parameter
-          return NoTransitionPage<void>(
+          final blogId = state.pathParameters['blogId']!;
+          return CustomTransitionPage<void>(
             key: state.pageKey,
-            child: BlogDetailPage(blogId: blogId), // Pass to page
+            child: BlogDetailPage(blogId: blogId),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
           );
         },
       ),

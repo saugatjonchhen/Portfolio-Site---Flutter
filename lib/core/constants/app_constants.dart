@@ -1,6 +1,6 @@
 class AppConstants {
   static const String appName = 'Personal Portfolio';
-  static const String resumeUrl = '/assets/resume.pdf';
+  static const String resumeUrl = '/resume.pdf';
 
   static const double mobileBreakpoint = 600;
   static const double tabletBreakpoint = 900;

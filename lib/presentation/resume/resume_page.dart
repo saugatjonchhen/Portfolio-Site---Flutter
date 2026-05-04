@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/utils/responsive.dart';
 import '../../data/content/resume_content.dart';
 import '../../data/models/education.dart';
@@ -21,10 +22,20 @@ class ResumePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final portfolioAsync = ref.watch(portfolioProvider);
+    final theme = Theme.of(context);
 
-    double horizontalPadding =
-        ResponsiveLayout.isSmallScreen(context) ? 24 : 100;
+    // More granular padding for better responsiveness
+    double horizontalPadding;
+    if (ResponsiveLayout.isLargeScreen(context)) {
+      horizontalPadding = 100;
+    } else if (ResponsiveLayout.isMediumScreen(context)) {
+      horizontalPadding = 48;
+    } else {
+      horizontalPadding = 24;
+    }
+
     final isSmall = ResponsiveLayout.isSmallScreen(context);
+    final isMedium = ResponsiveLayout.isMediumScreen(context);
 
     return Scaffold(
         appBar: const AppNavBar(),
@@ -43,34 +54,34 @@ class ResumePage extends ConsumerWidget {
                     const SizedBox(height: 60),
 
                     // --- HEADER & DOWNLOAD BUTTON ---
-                    isSmall
+                    // Switch to Column on Small and Medium screens to prevent title overflow
+                    (isSmall || isMedium)
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'My Professional Resume',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge!
-                                    .copyWith(fontSize: 32),
+                                style: theme.textTheme.displayLarge!.copyWith(
+                                  fontSize: isSmall ? 32 : 40,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
-                              const SizedBox(height: 20),
-                              SizedBox(
-                                width: double.infinity,
-                                child: _DownloadButton(),
-                              ),
+                              const SizedBox(height: 24),
+                              _DownloadButton(),
                             ],
                           )
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                'My Professional Resume',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge!
-                                    .copyWith(fontSize: 48),
+                              Expanded(
+                                child: Text(
+                                  'My Professional Resume',
+                                  style: theme.textTheme.displayLarge!.copyWith(
+                                    fontSize: 56,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
                               ),
                               _DownloadButton(),
                             ],
@@ -122,7 +133,7 @@ class _DownloadButton extends StatelessWidget {
 }
 
 void downloadResume() async {
-  final Uri url = Uri.parse('resume.pdf');
+  final Uri url = Uri.parse(AppConstants.resumeUrl);
   if (!await launchUrl(url)) {
     throw Exception('Could not launch $url');
   }
@@ -143,9 +154,10 @@ class ResumeContentLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Desktop View: Experience & Education on the left (wider column),
-    // Skills & Certifications on the right (narrower column)
-    if (ResponsiveLayout.isLargeScreen(context)) {
+    final theme = Theme.of(context);
+    final isDesktop = ResponsiveLayout.isLargeScreen(context);
+
+    if (isDesktop) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -155,26 +167,20 @@ class ResumeContentLayout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. Experience
                 Text('Professional Experience',
-                    style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 30),
-                ExperienceTimeline(
-                  items: experience,
-                ),
-                const SizedBox(height: 80), // Separator
+                    style: theme.textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w900)),
+                const SizedBox(height: 40),
+                ExperienceTimeline(items: experience),
+                const SizedBox(height: 80),
 
-                // 2. Education (Now Full-Width Timeline)
                 Text('Education',
-                    style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 30),
-                EducationTimeline(
-                  items: education,
-                ),
+                    style: theme.textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w900)),
+                const SizedBox(height: 40),
+                EducationTimeline(items: education),
               ],
             ),
           ),
-          const SizedBox(width: 60),
+          const SizedBox(width: 80),
 
           // Column 2: Sidebar (Skills, Certifications)
           Expanded(
@@ -182,23 +188,17 @@ class ResumeContentLayout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Skills (Compact View)
                 Text('Technical Skills',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium!
-                        .copyWith(fontSize: 24)),
-                const SizedBox(height: 30),
-                const SkillsGrid(isSidebar: true), // <-- Sidebar rendering
-                const SizedBox(height: 60),
+                    style: theme.textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w900, fontSize: 24)),
+                const SizedBox(height: 32),
+                const SkillsGrid(isSidebar: true),
+                const SizedBox(height: 64),
 
-                // Certifications (Compact View)
                 Text('Certifications',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium!
-                        .copyWith(fontSize: 24)),
-                const SizedBox(height: 30),
+                    style: theme.textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w900, fontSize: 24)),
+                const SizedBox(height: 32),
                 const CertificationsList(),
               ],
             ),
@@ -206,52 +206,35 @@ class ResumeContentLayout extends StatelessWidget {
         ],
       );
     } else {
-      // --- SINGLE-COLUMN LAYOUT (Mobile/Tablet) ---
+      // --- MOBILE/TABLET LAYOUT ---
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Using Text styles that are defined outside the theme,
-          // which is acceptable for a simple mobile view
-          const Text(
-            'Professional Experience',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 28,
-            ),
-          ),
-          const SizedBox(height: 30),
-          ExperienceTimeline(
-            items: experience,
-          ),
+          Text('Professional Experience',
+              style: theme.textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.w900, fontSize: 32)),
+          const SizedBox(height: 32),
+          ExperienceTimeline(items: experience),
           const SizedBox(height: 80),
-          const Text(
-            'Education',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 28,
-            ),
-          ),
-          const SizedBox(height: 30),
+
+          Text('Education',
+              style: theme.textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.w900, fontSize: 32)),
+          const SizedBox(height: 32),
           EducationTimeline(items: education),
           const SizedBox(height: 80),
-          const Text(
-            'Technical Skills',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 28,
-            ),
-          ),
-          const SizedBox(height: 30),
-          const SkillsGrid(), // <-- Full-width rendering
+
+          Text('Technical Skills',
+              style: theme.textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.w900, fontSize: 32)),
+          const SizedBox(height: 32),
+          const SkillsGrid(),
           const SizedBox(height: 80),
-          const Text(
-            'Certifications',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 28,
-            ),
-          ),
-          const SizedBox(height: 30),
+
+          Text('Certifications',
+              style: theme.textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.w900, fontSize: 32)),
+          const SizedBox(height: 32),
           const CertificationsList(),
         ],
       );
@@ -272,32 +255,29 @@ class EducationTimeline extends StatelessWidget {
     return Column(
       children: items.map((item) {
         bool isLast = item == items.last;
-        double lineHeight = 120;
-        double effectiveLineHeight = isLast ? lineHeight * 0.5 : lineHeight;
 
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _TimelineRail(isLast: isLast, lineHeight: effectiveLineHeight),
-            const SizedBox(width: 20),
-            Expanded(
-              child: TimelineCard.education(
-                degree: item.degree,
-                institution: item.institution,
-                years: item.years,
-                description: item.description,
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TimelineRail(isLast: isLast),
+              const SizedBox(width: 20),
+              Expanded(
+                child: TimelineCard.education(
+                  degree: item.degree,
+                  institution: item.institution,
+                  years: item.years,
+                  description: item.description,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       }).toList(),
     );
   }
 }
 
-// ------------------------------------------------------------------
-// --- Experience DEDICATED EXPERIENCE TIMELINE WIDGET ---
-// ------------------------------------------------------------------
 class ExperienceTimeline extends StatelessWidget {
   const ExperienceTimeline({super.key, required this.items});
 
@@ -308,26 +288,27 @@ class ExperienceTimeline extends StatelessWidget {
     return Column(
       children: items.map((item) {
         bool isLast = item == items.last;
-        double lineHeight = 220;
 
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- Timeline Rail (Left) ---
-            _TimelineRail(isLast: isLast, lineHeight: lineHeight),
-            const SizedBox(width: 20),
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- Timeline Rail (Left) ---
+              _TimelineRail(isLast: isLast),
+              const SizedBox(width: 20),
 
-            // --- Timeline Content (Right) ---
-            Expanded(
-              child: TimelineCard.experience(
-                title: item.title,
-                company: item.company,
-                duration: item.duration,
-                description: item.description,
-                achievements: item.achievements,
+              // --- Timeline Content (Right) ---
+              Expanded(
+                child: TimelineCard.experience(
+                  title: item.title,
+                  company: item.company,
+                  duration: item.duration,
+                  description: item.description,
+                  achievements: item.achievements,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       }).toList(),
     );
@@ -380,9 +361,8 @@ class CertificationsList extends StatelessWidget {
 // ------------------------------------------------------------------
 class _TimelineRail extends StatelessWidget {
   final bool isLast;
-  final double lineHeight;
 
-  const _TimelineRail({required this.isLast, required this.lineHeight});
+  const _TimelineRail({required this.isLast});
 
   @override
   Widget build(BuildContext context) {
@@ -397,18 +377,21 @@ class _TimelineRail extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                   blurRadius: 5.0,
                 )
               ]),
         ),
         // Line segment
-        Container(
-          width: 2,
-          height: lineHeight,
-          // FIX: Use a theme-relative color for the line (onSurface.withOpacity)
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-        ),
+        if (!isLast)
+          Expanded(
+            child: Container(
+              width: 2,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+            ),
+          )
+        else
+          const SizedBox(height: 32), // Spacer for the last item's bottom padding
       ],
     );
   }

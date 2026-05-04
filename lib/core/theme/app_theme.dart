@@ -18,12 +18,18 @@ class AppTheme {
   // --- DARK MODE PALETTE (Deep Slate & Energetic Green) ---
   // ------------------------------------
   static const Color primaryDark =
-      Color(0xFF34D399); // Vibrant Neon Green/Teal Accent
-  static const Color secondaryDark = Color(0xFF14B8A6);
-  static const Color backgroundDark = Color(0xFF0F172A); // Deep Navy Slate
-  static const Color surfaceDark = Color(0xFF1E293B); // Card/App Bar Surface
-  static const Color primaryTextDark = Color(0xFFF1F5F9); // Soft White
-  static const Color secondaryTextDark = Color(0xFF94A3B8); // Subtle Gray
+      Color(0xFF10B981); // Refined Energetic Green
+  static const Color secondaryDark = Color(0xFF34D399);
+  static const Color backgroundDark = Color(0xFF0B1120); // Deeper Dark Navy
+  static const Color surfaceDark = Color(0xFF1E293B);
+  static const Color primaryTextDark = Color(0xFFF8FAFC);
+  static const Color secondaryTextDark = Color(0xFF94A3B8);
+
+  // Glassmorphism Colors
+  static Color glassSurfaceDark = const Color(0xFF1E293B).withOpacity(0.7);
+  static Color glassSurfaceLight = const Color(0xFFFFFFFF).withOpacity(0.7);
+  static const Color glassBorderDark = Color(0xFF334155);
+  static const Color glassBorderLight = Color(0xFFE2E8F0);
 
   // Custom Color Constants (Used in Timeline Rail)
   static const Color secondaryTextDarkRail = secondaryTextDark;
