@@ -7,20 +7,35 @@ import 'components/home_page_hero.dart';
 import 'components/profile_card.dart';
 import 'components/contact_section.dart';
 
-class HomePage extends StatelessWidget {
+import 'components/custom_scrollbar.dart';
+
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     if (ResponsiveLayout.isLargeScreen(context)) {
       return Scaffold(
-        appBar: const AppNavBar(),
-        endDrawer: const AppDrawer(),
+        appBar: AppNavBar(),
+        endDrawer: AppDrawer(),
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(
-              width: 200,
+              width: 100, // Reduced from 200 for better layout balance
             ),
             // 1. LEFT COLUMN: FIXED Profile Card (Width: 350px)
             Container(
@@ -36,55 +51,57 @@ class HomePage extends StatelessWidget {
 
             // 2. RIGHT COLUMN: Scrollable Content, CONSTRAINED AND CENTERED
             Expanded(
-              child: Center(
-                // Center the content horizontally within the Expanded area
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth:
-                        850, // Set a max width (e.g., 850px) for a contained look
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const HomePageHero(),
-                        const SizedBox(height: 80),
-
-                        const ContactSection(),
-                        const SizedBox(height: 100),
-
-                        const Footer(),
-                        const SizedBox(height: 20),
-                      ],
+              child: CustomScrollbar(
+                controller: _scrollController,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 850,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const HomePageHero(),
+                          const SizedBox(height: 80),
+                          const ContactSection(),
+                          const SizedBox(height: 100),
+                          Footer(),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
             const SizedBox(
-              width: 100,
+              width: 50, // Reduced from 100
             ),
           ],
         ),
       );
     } else {
-      // --- MOBILE/TABLET VIEW (Stacking remains the same, left-aligned) ---
+      // --- MOBILE/TABLET VIEW ---
       return Scaffold(
-        appBar: const AppNavBar(),
-        endDrawer: const AppDrawer(),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const HomePageHero(),
-              const SizedBox(height: 80),
-
-              const ContactSection(),
-              const SizedBox(height: 100),
-
-              const Footer(),
-              const SizedBox(height: 20),
-            ],
+        appBar: AppNavBar(),
+        endDrawer: AppDrawer(),
+        body: CustomScrollbar(
+          controller: _scrollController,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const HomePageHero(),
+                const SizedBox(height: 80),
+                const ContactSection(),
+                const SizedBox(height: 100),
+                Footer(),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       );

@@ -49,9 +49,9 @@ class HomePageHero extends ConsumerWidget {
                 // Mobile/Tablet View needs the card shown here if not using the main Row
                 if (!ResponsiveLayout.isLargeScreen(context))
                   const ProfileCard()
-                      .animate()
-                      .fadeIn(duration: 600.ms)
-                      .moveY(begin: 30, end: 0),
+                      .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                      .moveY(begin: 0, end: -10, duration: 2.seconds, curve: Curves.easeInOut)
+                      .fadeIn(duration: 600.ms),
                 if (!ResponsiveLayout.isLargeScreen(context))
                   const SizedBox(
                     height: 40,
@@ -68,7 +68,7 @@ class HomePageHero extends ConsumerWidget {
                             ResponsiveLayout.isLargeScreen(context) ? 90 : 60,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 3,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: theme.colorScheme.onSurface.withOpacity(0.5),
                       ),
                     ),
                     Text(
@@ -107,17 +107,20 @@ class HomePageHero extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _MetricItem(
-                                value: '+${resumeData.yearsWorked}',
+                                value: resumeData.yearsWorked,
+                                suffix: '+',
                                 label: 'Years Experience',
                                 theme: theme,
                               ),
                               _MetricItem(
-                                value: '+${resumeData.projects.length}',
+                                value: resumeData.projects.length,
+                                suffix: '+',
                                 label: 'Projects Completed',
                                 theme: theme,
                               ),
                               _MetricItem(
-                                value: '+${resumeData.masteryCount}',
+                                value: resumeData.masteryCount,
+                                suffix: '+',
                                 label: 'Tech Stack',
                                 theme: theme,
                               ),
@@ -127,17 +130,20 @@ class HomePageHero extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _MetricItem(
-                                value: '${resumeData.yearsWorked}+',
+                                value: resumeData.yearsWorked,
+                                suffix: '+',
                                 label: 'Years Experience',
                                 theme: theme,
                               ),
                               _MetricItem(
-                                value: '${resumeData.projects.length}+',
+                                value: resumeData.projects.length,
+                                suffix: '+',
                                 label: 'Projects Completed',
                                 theme: theme,
                               ),
                               _MetricItem(
-                                value: '${resumeData.masteryCount}+',
+                                value: resumeData.masteryCount,
+                                suffix: '+',
                                 label: 'Tech Stack',
                                 theme: theme,
                               ),
@@ -172,25 +178,37 @@ class HomePageHero extends ConsumerWidget {
 
 // Helper widget for metrics
 class _MetricItem extends StatelessWidget {
-  final String value;
+  final int value;
+  final String suffix;
   final String label;
   final ThemeData theme;
 
-  const _MetricItem(
-      {required this.value, required this.label, required this.theme});
+  const _MetricItem({
+    required this.value,
+    required this.suffix,
+    required this.label,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          value,
-          style: theme.textTheme.displayLarge!.copyWith(
-            fontSize: ResponsiveLayout.isLargeScreen(context) ? 48 : 36,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
-          ),
+        TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: value.toDouble()),
+          duration: const Duration(seconds: 2),
+          curve: Curves.easeOutExpo,
+          builder: (context, val, child) {
+            return Text(
+              '${val.toInt()}$suffix',
+              style: theme.textTheme.displayLarge!.copyWith(
+                fontSize: ResponsiveLayout.isLargeScreen(context) ? 48 : 36,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            );
+          },
         ),
         Text(
           label,

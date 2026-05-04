@@ -102,7 +102,7 @@ class ContactSection extends StatelessWidget {
   }
 }
 
-class _ContactButton extends StatelessWidget {
+class _ContactButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -116,52 +116,86 @@ class _ContactButton extends StatelessWidget {
   });
 
   @override
+  State<_ContactButton> createState() => _ContactButtonState();
+}
+
+class _ContactButtonState extends State<_ContactButton> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
-        decoration: BoxDecoration(
-          color: isPrimary ? theme.colorScheme.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isPrimary ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.5),
-            width: 2,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: InkWell(
+        onTap: widget.onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+          decoration: BoxDecoration(
+            color: widget.isPrimary ? theme.colorScheme.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: widget.isPrimary
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.primary.withOpacity(0.5),
+              width: 2,
+            ),
+            boxShadow: widget.isPrimary
+                ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withOpacity(_isHovered ? 0.4 : 0.2),
+                      blurRadius: _isHovered ? 20 : 10,
+                      offset: const Offset(0, 5),
+                    )
+                  ]
+                : null,
           ),
-          boxShadow: isPrimary
-              ? [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  )
-                ]
-              : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FaIcon(
-              icon,
-              size: 20,
-              color: isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: theme.textTheme.titleMedium!.copyWith(
-                color: isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FaIcon(
+                widget.icon,
+                size: 20,
+                color: widget.isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Text(
+                widget.label,
+                style: theme.textTheme.titleMedium!.copyWith(
+                  color: widget.isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    ).animate(
+      autoPlay: true,
+      onPlay: (controller) => controller.repeat(reverse: true),
+    ).custom(
+      duration: 2.seconds,
+      builder: (context, value, child) {
+        if (!widget.isPrimary) return child;
+        return Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.primary.withOpacity(0.1 * value),
+                blurRadius: 20 * value,
+                spreadRadius: 5 * value,
+              ),
+            ],
+          ),
+          child: child,
+        );
+      },
     );
   }
 }

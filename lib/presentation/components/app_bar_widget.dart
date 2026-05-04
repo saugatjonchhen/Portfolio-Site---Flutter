@@ -1,5 +1,4 @@
-// lib/presentation/widgets/app_navbar.dart (MODIFIED FOR MOBILE DRAWER LOGIC)
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -14,108 +13,169 @@ class AppNavBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final isDark = themeMode == ThemeMode.dark;
+    final theme = Theme.of(context);
 
     // Get the current route path to highlight the active tab
     final currentRoute =
-    GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+        GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
 
-    return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-      elevation: 0,
-      title: Text(
-        '<SAUGAT JONCHHEN. //',
-        style: Theme.of(context).textTheme.labelSmall!.copyWith(fontSize: 16),
-      ),
-      actions: [
-        if (MediaQuery.of(context).size.width > 768) ...[
-          // --- NAVIGATION ITEMS (Desktop) ---
-          _NavBarItem(
-            title: 'Home',
-            path: '/',
-            isSelected: currentRoute == '/',
-            onPressed: () => context.go('/'),
-          ),
-          _NavBarItem(
-            title: 'Resume',
-            path: '/resume',
-            isSelected: currentRoute == '/resume',
-            onPressed: () => context.go('/resume'),
-          ),
-          _NavBarItem(
-            title: 'Portfolio',
-            path: '/portfolio',
-            isSelected: currentRoute == '/portfolio',
-            onPressed: () => context.go(
-              '/portfolio',
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight + 20),
+      child: ClipRRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: AppBar(
+            toolbarHeight: kToolbarHeight + 20,
+            backgroundColor: theme.colorScheme.surface.withOpacity(0.7),
+            elevation: 0,
+            centerTitle: false,
+            title: Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                '<SAUGAT JONCHHEN. //',
+                style: theme.textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
             ),
-          ),
-          _NavBarItem(
-            title: 'Blogs',
-            path: '/blogs',
-            isSelected: currentRoute == '/blogs',
-            onPressed: () => context.go(
-              '/blogs',
+            shape: Border(
+              bottom: BorderSide(
+                color: theme.dividerColor,
+                width: 1,
+              ),
             ),
-          ),
-        ],
-        // Theme Toggle Button
-        IconButton(
-          icon: FaIcon(
-            isDark ? FontAwesomeIcons.sun : FontAwesomeIcons.moon,
-            size: 20,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          onPressed: () {
-            ref.read(themeModeProvider.notifier).state =
-            isDark ? ThemeMode.light : ThemeMode.dark;
-          },
-        ),
-        // Hamburger Menu Icon for Mobile
-        if (MediaQuery.of(context).size.width <= 768)
-          Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: const Icon(Icons.menu),
+            actions: [
+              if (MediaQuery.of(context).size.width > 768) ...[
+                // --- NAVIGATION ITEMS (Desktop) ---
+                _NavBarItem(
+                  title: 'Home',
+                  path: '/',
+                  isSelected: currentRoute == '/',
+                  onPressed: () => context.go('/'),
+                ),
+                _NavBarItem(
+                  title: 'Resume',
+                  path: '/resume',
+                  isSelected: currentRoute == '/resume',
+                  onPressed: () => context.go('/resume'),
+                ),
+                _NavBarItem(
+                  title: 'Portfolio',
+                  path: '/portfolio',
+                  isSelected: currentRoute == '/portfolio',
+                  onPressed: () => context.go('/portfolio'),
+                ),
+                _NavBarItem(
+                  title: 'Blogs',
+                  path: '/blogs',
+                  isSelected: currentRoute == '/blogs',
+                  onPressed: () => context.go('/blogs'),
+                ),
+                const SizedBox(width: 20),
+              ],
+              // Theme Toggle Button
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                    size: 20,
+                    color: theme.colorScheme.primary,
+                  ),
                   onPressed: () {
-                    // ACTION: Open the End Drawer (opens from the right side)
-                    Scaffold.of(context).openEndDrawer();
+                    ref.read(themeModeProvider.notifier).state =
+                        isDark ? ThemeMode.light : ThemeMode.dark;
                   },
-                );
-              }
+                ),
+              ),
+              // Hamburger Menu Icon for Mobile
+              if (MediaQuery.of(context).size.width <= 768)
+                Builder(builder: (context) {
+                  return IconButton(
+                    icon: const Icon(Icons.menu_rounded),
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                  );
+                }),
+              const SizedBox(width: 20),
+            ],
           ),
-        const SizedBox(width: 16),
-      ],
+        ),
+      ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
 }
 
 // Reusable horizontal item for desktop view
-class _NavBarItem extends StatelessWidget {
+class _NavBarItem extends StatefulWidget {
   final String title;
   final String path;
   final bool isSelected;
   final VoidCallback onPressed;
 
-  const _NavBarItem(
-      {required this.title,
-        required this.path,
-        required this.isSelected,
-        required this.onPressed});
+  const _NavBarItem({
+    required this.title,
+    required this.path,
+    required this.isSelected,
+    required this.onPressed,
+  });
+
+  @override
+  State<_NavBarItem> createState() => _NavBarItemState();
+}
+
+class _NavBarItemState extends State<_NavBarItem> {
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurface,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+    final theme = Theme.of(context);
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: TextButton(
+        onPressed: widget.onPressed,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          foregroundColor: widget.isSelected || _isHovered
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onSurface,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.title,
+              style: theme.textTheme.bodyLarge!.copyWith(
+                fontWeight:
+                    widget.isSelected ? FontWeight.w900 : FontWeight.w500,
+                fontSize: 15,
+                color: widget.isSelected || _isHovered
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 4),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 2,
+              width: widget.isSelected ? 20 : (_isHovered ? 12 : 0),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ],
         ),
       ),
     );

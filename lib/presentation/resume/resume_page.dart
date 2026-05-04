@@ -16,11 +16,26 @@ import '../components/footer.dart';
 import '../components/skills_grid.dart';
 import '../components/timeline_card.dart';
 
-class ResumePage extends ConsumerWidget {
+import '../components/custom_scrollbar.dart';
+
+class ResumePage extends ConsumerStatefulWidget {
   const ResumePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ResumePage> createState() => _ResumePageState();
+}
+
+class _ResumePageState extends ConsumerState<ResumePage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final portfolioAsync = ref.watch(portfolioProvider);
     final theme = Theme.of(context);
 
@@ -38,67 +53,71 @@ class ResumePage extends ConsumerWidget {
     final isMedium = ResponsiveLayout.isMediumScreen(context);
 
     return Scaffold(
-        appBar: const AppNavBar(),
-        endDrawer: const AppDrawer(),
+        appBar: AppNavBar(),
+        endDrawer: AppDrawer(),
         body: portfolioAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) =>
               Center(child: Text('Failed to load resume data: $e')),
           data: (portfolio) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 60),
+            return CustomScrollbar(
+              controller: _scrollController,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 60),
 
-                    // --- HEADER & DOWNLOAD BUTTON ---
-                    // Switch to Column on Small and Medium screens to prevent title overflow
-                    (isSmall || isMedium)
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'My Professional Resume',
-                                style: theme.textTheme.displayLarge!.copyWith(
-                                  fontSize: isSmall ? 32 : 40,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              _DownloadButton(),
-                            ],
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Text(
+                      // --- HEADER & DOWNLOAD BUTTON ---
+                      // Switch to Column on Small and Medium screens to prevent title overflow
+                      (isSmall || isMedium)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
                                   'My Professional Resume',
                                   style: theme.textTheme.displayLarge!.copyWith(
-                                    fontSize: 56,
+                                    fontSize: isSmall ? 32 : 40,
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                              ),
-                              _DownloadButton(),
-                            ],
-                          ),
+                                const SizedBox(height: 24),
+                                _DownloadButton(),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'My Professional Resume',
+                                    style: theme.textTheme.displayLarge!.copyWith(
+                                      fontSize: 56,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                                _DownloadButton(),
+                              ],
+                            ),
 
-                    const SizedBox(height: 60),
+                      const SizedBox(height: 60),
 
-                    // 👇 PASS DATA HERE
-                    ResumeContentLayout(
-                      education: portfolio.education,
-                      experience: portfolio.experience,
-                    ),
+                      // 👇 PASS DATA HERE
+                      ResumeContentLayout(
+                        education: portfolio.education,
+                        experience: portfolio.experience,
+                      ),
 
-                    const SizedBox(height: 80),
-                    const Footer(),
-                    const SizedBox(height: 20),
-                  ],
+                      const SizedBox(height: 80),
+                      Footer(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             );
